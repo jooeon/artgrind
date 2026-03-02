@@ -3,21 +3,6 @@ import {redirect} from "next/navigation";
 import LandingAnimation from "./components/LandingAnimation";
 import React from "react";
 
-// async function getBoards() {
-//     const cookieStore = await cookies();
-//     const token = cookieStore.get("access_token")?.value;
-//
-//     if (!token) return null;
-//
-//     const res = await fetch("https://api.pinterest.com/v5/boards", {
-//         headers: {
-//             Authorization: `Bearer ${token}`,
-//         },
-//     });
-//
-//     return res.json();
-// }
-
 export default async function Home() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
