@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+.button {
+    display: block;
+    width: fit-content;
+    padding: 5px 18px;
+    background-color: var(--color-custom-black);
+    color: var(--color-custom-white);
+    border-radius: 5px;
+    font-weight: 550;
+}
+
+/* Fonts */
+@font-face {
+    font-family: 'fornire-light';
+    src: url('/fonts/Fornire-Light.otf') format('opentype');
+}
+
+@theme {
+    /* Custom fonts */
+    --font-fornire: 'fornire-light', Arial, sans-serif;
+    --font-neue-haas: 'neue-haas-grotesk-display', Arial, sans-serif;
+
+    /* Custom colors */
+    --color-custom-white: #fafafa;
+    --color-custom-black: #070707;
+
+    /* Custom screens */
+    --breakpoint-xs: 390px;
+    --breakpoint-3xl: 2560px;
+    --breakpoint-4xl: 3024px;
+
+    /* Custom font sizes */
+    --text-10xl: 10rem;
+    --text-11xl: 12rem;
+    --text-12xl: 13.5rem;
+}
