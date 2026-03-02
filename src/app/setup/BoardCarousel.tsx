@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-type Board = {
+export type Board = {
     id: string;
     name: string;
     pin_count: number;
@@ -12,8 +10,13 @@ type Board = {
     };
 };
 
-export default function BoardCarousel({ boards }: { boards: Board[] }) {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+type Props = {
+    boards: Board[];
+    selectedIndex: number;
+    onSelect: (index: number) => void;
+}
+
+export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props) {
 
     const getIndex = (offset: number) => (selectedIndex + offset + boards.length) % boards.length;
 
@@ -29,19 +32,19 @@ export default function BoardCarousel({ boards }: { boards: Board[] }) {
                 {visibleBoards.map(({ board, offset }) => (
                     <div
                         key={board.id}
-                        onClick={() => setSelectedIndex(getIndex(offset))}
+                        onClick={() => onSelect(getIndex(offset))}
                         className={`cursor-pointer transition-opacity ${offset === 0 ? "opacity-100" : "opacity-40"}`}
                     >
                         <div className="w-[21vh] xl:w-full flex gap-[2px]">
                             <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
-                                 className={`w-[14vh] h-[14vh] object-cover rounded-l-2xl
+                                 className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl
                                     ${offset === 0 ? "xl:w-[14vw] xl:h-[14vw]" : "xl:w-[12vw] xl:h-[12vw]"}`}/>
                             <div className="flex flex-col gap-[2px]">
                                 <img src={board.media.pin_thumbnail_urls[0]} alt="pinterest_board_thumbnail_2"
-                                     className={`w-[7vh] h-[7vh] min-w-[7vh] object-cover rounded-tr-2xl
+                                     className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-tr-2xl
                                         ${offset === 0 ? "xl:w-[7vw] xl:h-[7vw]" : "xl:w-[6vw] xl:h-[6vw]"}`}/>
                                 <img src={board.media.pin_thumbnail_urls[1]} alt="pinterest_board_thumbnail_3"
-                                     className={`w-[7vh] h-[7vh] min-w-[7vh] object-cover rounded-br-2xl
+                                     className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-br-2xl
                                         ${offset === 0 ? "xl:w-[7vw] xl:h-[7vw]" : "xl:w-[6vw] xl:h-[6vw]"}`}/>
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import {redirect} from "next/navigation";
 import LandingAnimation from "./components/LandingAnimation";
 import React from "react";
+import Footer from "@/app/components/Footer";
 
 export default async function Home() {
     const cookieStore = await cookies();
@@ -35,13 +36,14 @@ export default async function Home() {
                             <li>3. Customize your timer settings and start drawing</li>
                         </ol>
                         <div className="w-full">
-                            <a href="/api/auth/login" role="button" className="button m-auto">
+                            <a href="/api/auth/login" role="button" className="button m-auto w-fit">
                                 Sync to Pinterest
                             </a>
                         </div>
                     </div>
                 </div>
             </section>
+            <Footer />
         </main>
     );
 }
