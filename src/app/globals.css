@@ -12,9 +12,11 @@
     --font-neue-haas: 'neue-haas-grotesk-display', Arial, sans-serif;
 
     /* Custom colors */
-    --color-custom-white: #ffffff;
-    --color-custom-black: #070707;
-    --color-custom-gray: #c7c7c7;
+    --color-white: #ffffff;
+    --color-black: #101010;
+    --color-black-light: #151515;
+    --color-gray-dark: #6A6A6A;
+    --color-gray-light: #9c9c9c;
 
     /* Custom screens */
     --breakpoint-xs: 390px;
@@ -32,10 +34,20 @@
     /*width: fit-content;*/
     text-align: center;
     padding: 5px 18px;
-    background-color: var(--color-custom-black);
-    color: var(--color-custom-white);
+    background-color: var(--color-black);
+    color: var(--color-white);
     border-radius: 5px;
     font-weight: 550;
+}
+
+.button-white {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .setting-button {
@@ -57,6 +69,6 @@
 }
 
 .setting-button-active {
-    background-color: var(--color-custom-black);
-    color: var(--color-custom-white);
+    background-color: var(--color-black);
+    color: var(--color-white);
 }

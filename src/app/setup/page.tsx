@@ -37,10 +37,10 @@ export default async function Setup() {
     return (
         <>
             <main
-                className="flex flex-col justify-between gap-[2vh] xl:gap-[4vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
+                className="flex flex-col min-h-[100vh] justify-between gap-[2vh] xl:gap-[2.5vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
                 <SetupForm boards={data}/>
+                <Footer />
             </main>
-            <Footer />
         </>
     );
 }

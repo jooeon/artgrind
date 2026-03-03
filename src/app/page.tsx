@@ -11,7 +11,7 @@ export default async function Home() {
     if (token) redirect("/setup");
 
     return (
-        <main className="relative w-full px-[1.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
+        <main className="flex flex-col min-h-[100vh] relative w-full px-[1.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
             <div className="relative">
                 <h1 className="flex flex-col
                         font-fornire lowercase text-[15vh] xl:text-[15vw] leading-[0.5]">
@@ -26,7 +26,7 @@ export default async function Home() {
                 </p>
             </div>
             {/* Login Section */}
-            <section className="flex w-full h-1/2 mt-[15vh] xl:mt-[10vw] xl:px-[5vw]">
+            <section className="flex flex-1 w-full h-1/2 mt-[15vh] xl:mt-[10vw] xl:px-[5vw]">
                 <div className="flex flex-col gap-[2.5vh] xl:gap-[1.5vw] xl:w-1/2 h-full font-neue-haas">
                     <h2 className="font-fornire lowercase text-[5vh] xl:text-[3vw] leading-none">to get started:</h2>
                     <div className="flex flex-col gap-[2vh] xl:gap-[2vw] xl:pl-[4vw] w-fit text-[1.5vh] xl:text-[1vw]">

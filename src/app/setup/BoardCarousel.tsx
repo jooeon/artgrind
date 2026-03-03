@@ -38,14 +38,14 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                         <div className="w-[21vh] xl:w-full flex gap-[2px]">
                             <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
                                  className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl
-                                    ${offset === 0 ? "xl:w-[14vw] xl:h-[14vw]" : "xl:w-[12vw] xl:h-[12vw]"}`}/>
+                                    ${offset === 0 ? "xl:w-[13vw] xl:h-[13vw]" : "xl:w-[11vw] xl:h-[11vw]"}`}/>
                             <div className="flex flex-col gap-[2px]">
                                 <img src={board.media.pin_thumbnail_urls[0]} alt="pinterest_board_thumbnail_2"
                                      className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-tr-2xl
-                                        ${offset === 0 ? "xl:w-[7vw] xl:h-[7vw]" : "xl:w-[6vw] xl:h-[6vw]"}`}/>
+                                        ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
                                 <img src={board.media.pin_thumbnail_urls[1]} alt="pinterest_board_thumbnail_3"
                                      className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-br-2xl
-                                        ${offset === 0 ? "xl:w-[7vw] xl:h-[7vw]" : "xl:w-[6vw] xl:h-[6vw]"}`}/>
+                                        ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
                             </div>
                         </div>
                         <div className="mt-[0.5vw] font-neue-haas flex flex-col items-center gap-[0.2vw]">
