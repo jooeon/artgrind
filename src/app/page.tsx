@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import LandingAnimation from "./components/LandingAnimation";
 import React from "react";
 import Footer from "@/app/components/Footer";
+import CharacterAnimation from "@/app/components/CharacterAnimation";
 
 export default async function Home() {
     const cookieStore = await cookies();
@@ -26,10 +27,12 @@ export default async function Home() {
                 </p>
             </div>
             {/* Login Section */}
-            <section className="flex flex-1 w-full h-1/2 mt-[15vh] xl:mt-[10vw] xl:px-[5vw]">
-                <div className="flex flex-col gap-[2.5vh] xl:gap-[1.5vw] xl:w-1/2 h-full font-neue-haas">
-                    <h2 className="font-fornire lowercase text-[5vh] xl:text-[3vw] leading-none">to get started:</h2>
-                    <div className="flex flex-col gap-[2vh] xl:gap-[2vw] xl:pl-[4vw] w-fit text-[1.5vh] xl:text-[1vw]">
+            <section className="flex flex-col xl:flex-row items-center xl:justify-center gap-[5vh] xl:gap-[10vw] flex-1
+                w-full h-1/2 mt-[15vh] xl:mt-[8vw] xl:px-[5vw]">
+                <div className="relative flex flex-col gap-[2.5vh] xl:gap-[1.5vw] w-fit h-full font-neue-haas">
+                    <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[5vh] xl:text-[3.75vw] leading-none text-center xl:text-start">to
+                        get started:</h2>
+                    <div className="flex flex-col gap-[2vh] xl:gap-[2vw] w-fit text-[1.5vh] xl:text-[1.25vw]">
                         <ol className="flex flex-col gap-[1vh] xl:gap-[0.75vw] font-medium xl:font-semibold">
                             <li>1. Hand-pick your references on Pinterest</li>
                             <li>2. Instantly sync and access all of your boards</li>
@@ -43,7 +46,8 @@ export default async function Home() {
                     </div>
                 </div>
             </section>
-            <Footer />
+            <CharacterAnimation />
+            <Footer/>
         </main>
     );
 }

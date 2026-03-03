@@ -29,6 +29,24 @@
     --text-12xl: 13.5rem;
 }
 
+* {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+input, textarea {
+    user-select: text;
+}
+
+img {
+    z-index: -20;
+}
+
+a {
+    cursor: none;
+}
+
 .button {
     display: block;
     /*width: fit-content;*/
@@ -38,6 +56,11 @@
     color: var(--color-white);
     border-radius: 5px;
     font-weight: 550;
+    transition: opacity 0.2s ease-out;
+}
+
+.button:hover {
+    opacity: 0.8;
 }
 
 .button-white {
@@ -56,11 +79,15 @@ button:disabled {
     justify-content: center;
     font-weight: 500;
     border-radius: 9999px;
-    transition: all .2s ease;
-    cursor: pointer;
+    /*cursor: pointer;*/
     border: none;
     outline: none;
     background-color: #efefef;
+    transition: opacity 0.2s ease-out;
+}
+
+.setting-button:hover {
+    opacity: 0.8;
 }
 
 .setting-button:disabled {

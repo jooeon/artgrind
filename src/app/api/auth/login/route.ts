@@ -14,7 +14,7 @@ export async function GET() {
         client_id: clientId,
         redirect_uri: redirectUri,
         response_type: "code",
-        scope: "boards:read,pins:read",
+        scope: "boards:read,pins:read,user_accounts:read",
     });
 
     const authUrl = `https://www.pinterest.com/oauth/?${params.toString()}`;

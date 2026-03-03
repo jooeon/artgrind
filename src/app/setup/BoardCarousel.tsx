@@ -33,7 +33,8 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                     <div
                         key={board.id}
                         onClick={() => onSelect(getIndex(offset))}
-                        className={`cursor-pointer transition-opacity ${offset === 0 ? "opacity-100" : "opacity-40"}`}
+                        className={`cursor-pointer ${offset === 0 ? "opacity-100" : "opacity-40"}`}
+                        data-clickable="true"
                     >
                         <div className="w-[21vh] xl:w-full flex gap-[2px]">
                             <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"

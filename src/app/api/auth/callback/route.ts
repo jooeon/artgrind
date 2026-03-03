@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
     });
 
     const data = await tokenResponse.json();
-    console.log("Status:", tokenResponse.status);
-    console.log("Data:", JSON.stringify(data, null, 2));
+    // console.log("Status:", tokenResponse.status);
+    // console.log("Data:", JSON.stringify(data, null, 2));
 
     const cookieStore = await cookies();
     cookieStore.set("access_token", data.access_token, {

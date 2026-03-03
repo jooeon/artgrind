@@ -53,6 +53,11 @@ export default async function PracticePage({
         throw new Error("No index provided");
     }
 
+    // parse intervals as numbers
+    const parsedIntervals = intervals
+        ? (Array.isArray(intervals) ? intervals : [intervals]).map(Number)
+        : [];
+
     const data = await getListOfPins(index);
 
     if (!data) redirect("/setup");
@@ -67,6 +72,7 @@ export default async function PracticePage({
                         pins={data.items}
                         rounds={Number(rounds)}
                         timePerImage={Number(time)}
+                        warnIntervals={parsedIntervals}
                     />
                 </section>
             </main>

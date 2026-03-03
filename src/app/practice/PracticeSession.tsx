@@ -20,6 +20,7 @@ type Props = {
     pins: Pin[];
     rounds: number;
     timePerImage: number; // in seconds
+    warnIntervals: number[];
 };
 
 function getRandomOrder(pins: Pin[], rounds: number): Pin[] {
@@ -34,15 +35,22 @@ function formatTime(seconds: number): string {
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
-export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
+export default function PracticeSession({ pins, rounds, timePerImage, warnIntervals }: Props) {
     const [queue] = useState<Pin[]>(() => getRandomOrder(pins, rounds));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState(timePerImage);
     const [isPaused, setIsPaused] = useState(false);
     const [isSessionOver, setIsSessionOver] = useState(false);
+    const [stopClicked, setStopClicked] = useState(false);
 
     useEffect(() => {
         if (isPaused) return;
+
+        if (warnIntervals.includes(timeLeft)) {
+            const audio = new Audio("/audio/chime.mp3");
+            audio.volume = 0.5;
+            audio.play();
+        }
 
         if (timeLeft === 0) {
             if (currentIndex < queue.length - 1) {
@@ -67,7 +75,7 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
         <div className="min-h-[100vh] relative flex justify-center">
             <div className="relative h-fit">
                 <img src={currentPin.media.images["1200x"].url} alt="current_practice_image"
-                     className={`object-cover xl:h-screen xl:max-h-screen ${isPaused ? 'opacity-80' : 'opacity-100'}`} />
+                     className={`object-cover xl:h-screen xl:max-h-screen ${isPaused ? 'opacity-70' : 'opacity-100'}`} />
                 <p className="absolute right-[1vh] xl:bottom-[0.25vw] top-full xl:top-auto xl:right-full xl:pr-[0.6vw] text-gray-dark font-semibold text-[2vh] xl:text-[1.25vw]">
                     {currentIndex+1}/{rounds}
                 </p>
@@ -79,7 +87,8 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
                 )}
             </div>
             {/* Controls UI */}
-            <div className="flex flex-col justify-center items-center gap-[1vw] absolute right-0 h-[100vh] w-[3vw] bg-white">
+            <div
+                className="flex flex-col justify-center items-center gap-[1vw] absolute right-0 h-[100vh] w-[3vw] bg-white">
                 {/* Play/Pause */}
                 <button
                     onClick={() => setIsPaused(!isPaused)}
@@ -104,8 +113,11 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
                 </button>
                 {/* Forward */}
                 <button
-                    onClick={() => setCurrentIndex(currentIndex + 1)}
-                    disabled={currentIndex === rounds-1}
+                    onClick={() => {
+                        setCurrentIndex(currentIndex + 1);
+                        setTimeLeft(timePerImage);
+                    }}
+                    disabled={currentIndex === rounds - 1}
                     className="cursor-pointer"
                 >
                     <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
@@ -123,7 +135,10 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
                 </button>
                 {/* Backward */}
                 <button
-                    onClick={() => setCurrentIndex(currentIndex - 1)}
+                    onClick={() => {
+                        setCurrentIndex(currentIndex - 1);
+                        setTimeLeft(timePerImage);
+                    }}
                     disabled={currentIndex == 0}
                     className="cursor-pointer"
                 >
@@ -143,14 +158,66 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
                     </div>
                 </button>
                 {/* Stop */}
-                <Link href="/setup">
+                <button
+                    onClick={() => {
+                        setStopClicked(true);
+                        setIsPaused(true)
+                    }}
+                    disabled={stopClicked}
+                    className="cursor-pointer"
+                >
                     <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
                         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="16" height="16" rx="1" fill="#131313"/>
                         </svg>
                     </div>
-                </Link>
+                </button>
             </div>
+            {stopClicked && (
+                <motion.div
+                    className="fixed w-full h-full flex justify-center items-center"
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    transition={{
+                        duration: 0.3,
+                        ease: "easeIn",
+                    }}
+                    onClick={() => setStopClicked(false)}
+                >
+                    <div className="fixed top-0 left-0 w-screen h-screen bg-black opacity-60"/>
+                    <motion.div
+                        className="relative w-[80vw] xl:w-[50vw] h-fit flex flex-col gap-[3vh] xl:gap-[1.5vw]
+                            px-[3vh] py-[3vh] xl:p-[1.5vw] xl:text-[1vw] text-white"
+                        initial={{opacity: 0, y: 40}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{
+                            delay: 0.1,
+                            duration: 0.4,
+                            ease: [0.76, 0, 0.24, 1],
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* X button */}
+                        <button
+                            onClick={() => setStopClicked(false)}
+                            className="absolute top-[0.75vw] right-[1vw] z-20 text-white cursor-pointer"
+                        >
+                            ✕
+                        </button>
+
+                        <p className="z-10 text-center text-[4vw] font-fornire leading-none lowercase">Would you really like to quit?</p>
+                        <div className="z-10 m-auto">
+                            <Link href="/setup" className="button button-white w-fit">
+                                Quit
+                            </Link>
+                        </div>
+                        {/* shadow box */}
+                        <div className="absolute inset-0 translate-y-4 rounded-xl bg-white"></div>
+                        {/* main box */}
+                        <div className="absolute inset-0 border-3 border-white rounded-xl bg-black"></div>
+                    </motion.div>
+                </motion.div>
+            )}
             {isSessionOver &&
                 <motion.div
                     className="fixed w-full h-full flex justify-center items-center"
@@ -174,8 +241,10 @@ export default function PracticeSession({ pins, rounds, timePerImage }: Props) {
                             ease: "easeOut",
                         }}
                     >
-                        <p className="z-10 text-center text-[4vw] font-fornire leading-none lowercase">Practice session complete.</p>
-                        <p className="z-10 text-center text-[1.5vw] font-semibold">Congrats! You&#39;ve completed the practice session you&#39;ve committed to.</p>
+                        <p className="z-10 text-center text-[4vw] font-fornire leading-none lowercase">Practice session
+                            complete.</p>
+                        <p className="z-10 text-center text-[1.35vw] font-semibold">Congratulations! You&#39;ve completed the
+                            practice session you&#39;ve committed to.</p>
                         <div className="z-10 m-auto">
                             <Link href="/setup" className="button button-white w-fit">
                                 Finish

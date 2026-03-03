@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import BoardCarousel from "@/app/setup/BoardCarousel";
 import type { Board } from "./BoardCarousel";
 import Link from "next/link";
+import { motion } from "motion/react";
 
 type Props = {
     boards: Board[];
@@ -12,7 +13,7 @@ export function SetupForm({ boards }: Props) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [numberOfRounds, setNumberOfRounds] = useState<number>(5);
     const [timePerImage, setTimePerImage] = useState<number>(60); // stored in seconds
-    const [warningIntervals, setWarningIntervals] = useState<number[]>([]); // in seconds
+    const [warningIntervals, setWarningIntervals] = useState<number[]>([30]); // in seconds
     const maxRounds = boards[selectedIndex].pin_count;
 
     const handleTimeSelection = (newValue: number) => {
@@ -23,7 +24,7 @@ export function SetupForm({ boards }: Props) {
     };
 
     const timeOptions = [
-        { label: "30s", value: 2 },
+        { label: "30s", value: 30 },
         { label: "60s", value: 60 },
         { label: "90s", value: 90 },
         { label: "2m", value: 120 },
@@ -46,7 +47,7 @@ export function SetupForm({ boards }: Props) {
             index: boards[selectedIndex].id,
             rounds: numberOfRounds,
             time: timePerImage,
-            intervals: JSON.stringify(warningIntervals),
+            intervals: warningIntervals,
         },
     };
 
@@ -57,7 +58,16 @@ export function SetupForm({ boards }: Props) {
                 selectedIndex={selectedIndex}
                 onSelect={setSelectedIndex}
             />
-            <section className="flex flex-1 justify-center items-center w-full">
+            <motion.section
+                className="flex flex-1 justify-center items-center w-full"
+                initial={{opacity: 0, y: 40}}
+                animate={{opacity: 1, y: 0}}
+                transition={{
+                    delay: 0.2,
+                    duration: 0.4,
+                    ease: [0.76, 0, 0.24, 1],
+                }}
+            >
                 <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[3vh] py-[3vh] xl:p-[1.5vw] xl:text-[1vw]">
                     <div>
                         <p>Number of practice rounds:</p>
@@ -72,7 +82,7 @@ export function SetupForm({ boards }: Props) {
                             <input type="number"
                                    value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds}
                                    onChange={(e) => setNumberOfRounds(Math.min(Number(e.target.value) || 0, maxRounds))}
-                                   className="flex rounded-md border-1 border-custom-gray px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
+                                   className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                             <button
@@ -144,7 +154,7 @@ export function SetupForm({ boards }: Props) {
                     {/* main box */}
                     <div className="absolute inset-0 border-3 rounded-xl bg-white z-[-5]"></div>
                 </div>
-            </section>
+            </motion.section>
         </>
     );
 
