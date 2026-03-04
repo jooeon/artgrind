@@ -92,6 +92,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     }, [timeLeft, currentIndex, isPaused, timePerImage]);
 
     const currentPin = queue[currentIndex];
+    // console.log(queue);
 
     return (
         <div className="min-h-[100vh] relative flex justify-center">

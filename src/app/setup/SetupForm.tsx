@@ -31,7 +31,7 @@ export function SetupForm({ boards }: Props) {
 
     const { settings, updateSettings } = useSetupSettings();
     const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
-    const maxRounds = boards[selectedIndex].pin_count;
+    const maxRounds = Math.min(boards[selectedIndex].pin_count, 250);   // max number of pins in a single request is 250
     const presetValues = timeOptions.map(o => o.value);
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
@@ -71,7 +71,13 @@ export function SetupForm({ boards }: Props) {
             <BoardCarousel
                 boards={boards}
                 selectedIndex={selectedIndex}
-                onSelect={(i) => updateSettings({ selectedIndex: i })}
+                onSelect={(i) => {
+                    const newMax = Math.min(boards[i].pin_count, 250);
+                    updateSettings({
+                        selectedIndex: i,
+                        numberOfRounds: Math.min(numberOfRounds, newMax)
+                    });
+                }}
             />
             <motion.section
                 className="flex flex-1 justify-center items-center w-full"
@@ -95,8 +101,13 @@ export function SetupForm({ boards }: Props) {
                                 −
                             </button>
                             <input type="number"
+                                   step="1"
+                                   onKeyDown={(e) => {
+                                       if (e.key === ".") e.preventDefault();
+                                   }}
                                    value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds}
-                                   onChange={(e) => updateSettings({ numberOfRounds: Math.min(Number(e.target.value) || 0, maxRounds) })}
+                                   min="1" max="250"
+                                   onChange={(e) => updateSettings({ numberOfRounds: Math.min(Math.floor(Number(e.target.value)) || 1, maxRounds) })}
                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
@@ -124,7 +135,7 @@ export function SetupForm({ boards }: Props) {
                                     key={value}
                                     onClick={() => {
                                         setCustomMode(false);
-                                        handleTimeSelection(value)
+                                        handleTimeSelection(value);
                                     }}
                                     className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
                                 >
@@ -156,9 +167,14 @@ export function SetupForm({ boards }: Props) {
                                 >
                                     <input
                                         type="number"
+                                        step="1"
+                                        onKeyDown={(e) => {
+                                            if (e.key === ".") e.preventDefault();
+                                        }}
                                         value={customTimeValue}
+                                        min="1" max="3600"
                                         onChange={(e) => {
-                                            const val = Number(e.target.value) || 0;
+                                            const val = Math.min(Math.max(Math.floor(Number(e.target.value)) || 1, 1), 3600);
                                             setCustomTimeValue(val);
                                             updateSettings({timePerImage: val});
                                         }}

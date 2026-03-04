@@ -39,8 +39,9 @@ export default async function Home() {
                             <li>3. Customize your timer settings and start drawing</li>
                         </ol>
                         <div className="w-full">
-                            <a href="/api/auth/login" role="button" className="button m-auto w-fit">
-                                Sync to Pinterest
+                            <a href="/api/auth/login" role="button" className="flex flex-col button m-auto w-fit">
+                                <span>Sync to Pinterest</span>
+                                <span className="text:[1vh] xl:text-[0.75vw] font-normal xl:font-medium">(requires Pinterest account)</span>
                             </a>
                         </div>
                     </div>

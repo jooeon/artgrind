@@ -19,7 +19,7 @@ export default function RootLayout({
                 <link rel="stylesheet" href="https://use.typekit.net/vvo6xhh.css"/>
                 <title>ArtGrind - Timed Drawing Practice</title>
             </head>
-            <body className="font-neue-haas">
+            <body className="bg-white font-neue-haas">
                 <DrawableBackground />
                 <Cursor />
                 {children}

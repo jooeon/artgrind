@@ -8,7 +8,7 @@ async function getListOfPins(boardId: string) {
 
     if (!token) return null;
 
-    const res = await fetch(`https://api.pinterest.com/v5/boards/${boardId}/pins?board_id=${boardId}`, {
+    const res = await fetch(`https://api.pinterest.com/v5/boards/${boardId}/pins?board_id=${boardId}&page_size=250`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -17,6 +17,7 @@ async function getListOfPins(boardId: string) {
         },
     });
 
+    // console.log(await res.json())
     return res.json();
 }
 

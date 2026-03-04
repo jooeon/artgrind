@@ -1,5 +1,7 @@
 "use client";
 
+import {useSetupSettings} from "@/app/hooks/useSetupSettings";
+
 export type Board = {
     id: string;
     name: string;
@@ -17,7 +19,6 @@ type Props = {
 }
 
 export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props) {
-
     const getIndex = (offset: number) => (selectedIndex + offset + boards.length) % boards.length;
 
     const visibleBoards = [
@@ -32,7 +33,9 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                 {visibleBoards.map(({ board, offset }) => (
                     <div
                         key={board.id}
-                        onClick={() => onSelect(getIndex(offset))}
+                        onClick={() => {
+                            onSelect(getIndex(offset))
+                        }}
                         className={`cursor-pointer ${offset === 0 ? "opacity-100" : "opacity-40"}`}
                         data-clickable="true"
                     >
@@ -49,7 +52,7 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                                         ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
                             </div>
                         </div>
-                        <div className="mt-[0.5vw] font-neue-haas flex flex-col items-center gap-[0.2vw]">
+                        <div className="mt-[0.5vw] font-neue-haas flex flex-col items-center">
                             <p className={`font-bold text-[1.5vh] xl:text-[1.25vw]`}>{board.name}</p>
                             <p className={`font-medium text-[1.25vh] xl:text-[1vw]`}>{board.pin_count} Pins</p>
                         </div>

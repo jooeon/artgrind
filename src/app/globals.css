@@ -48,15 +48,19 @@ a {
 }
 
 .button {
-    display: block;
-    /*width: fit-content;*/
     text-align: center;
-    padding: 5px 18px;
     background-color: var(--color-black);
     color: var(--color-white);
     border-radius: 5px;
     font-weight: 550;
     transition: all 0.2s ease-out;
+    padding: 0.5vw 1.5vw;
+}
+
+@media screen and (max-width: 1280px) {
+    .button {
+        padding: 0.75vh 1.5vh;
+    }
 }
 
 .button:hover {
@@ -93,6 +97,7 @@ button:disabled {
 .setting-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    pointer-events: none;
 }
 
 .setting-button-active {
