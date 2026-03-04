@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect} from "react";
 
 type Settings = {
     selectedIndex: number;
@@ -18,7 +18,7 @@ const STORAGE_KEY = "artgrind_settings";
 
 export function useSetupSettings() {
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-    const isLoaded = useRef(false);
+    // const isLoaded = useRef(false);
 
     // load from localStorage on mount
     useEffect(() => {

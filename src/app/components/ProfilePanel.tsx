@@ -48,18 +48,28 @@ export default function ProfilePanel({ username }: { username: string }) {
                 onHoverEnd={() => setIsOpen(false)}
             >
                 {/* character icon */}
-                <button onClick={() => setIsOpen(prev => !prev)}
+                <motion.button onClick={() => setIsOpen(prev => !prev)}
                         className="h-[5vh] w-[5vh] xl:h-[2.5vw] xl:w-[2.5vw]"
+                        variants={{
+                            rest: { rotate: 0 },
+                            hover: { rotate: -5 },
+                        }}
+                        animate={isOpen ? "hover" : "rest"}
+                        transition={{
+                            delay: 0,
+                            duration: 0.1,
+                            ease: "easeIn"
+                        }}
                 >
                     <Character/>
-                </button>
+                </motion.button>
                 <motion.a
                     href="/api/auth/logout"
                     className="font-bold hover:underline xl:pb-[1vw] text-[2vh] xl:text-[1vw]"
                     initial="rest"
                     variants={{
                         rest: { opacity: 0, y: 0},
-                        hover: { opacity: 1, y: 5},
+                        hover: { opacity: 1, y: 6},
                     }}
                     animate={isOpen ? "hover" : "rest"}
                     transition={{

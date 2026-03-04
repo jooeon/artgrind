@@ -262,7 +262,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                             ✕
                         </button>
 
-                        <p className="z-10 text-center text-[4vh] xl:text-[4vw] font-fornire leading-none lowercase">Would you really like to quit?</p>
+                        <p className="z-10 text-center text-[5vh] xl:text-[4vw] font-fornire leading-none lowercase">Are you sure you want to quit?</p>
                         <div className="z-10 m-auto">
                             <Link href="/setup" className="button button-white w-fit cursor-pointer!">
                                 Quit

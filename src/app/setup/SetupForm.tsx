@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import BoardCarousel from "@/app/setup/BoardCarousel";
 import type { Board } from "./BoardCarousel";
 import Link from "next/link";
@@ -11,26 +11,6 @@ type Props = {
 }
 
 export function SetupForm({ boards }: Props) {
-    const { settings, updateSettings } = useSetupSettings();
-    const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
-
-    // const [selectedIndex, setSelectedIndex] = useState(0);
-    // const [numberOfRounds, setNumberOfRounds] = useState<number>(5);
-    // const [timePerImage, setTimePerImage] = useState<number>(60); // stored in seconds
-    // const [warningIntervals, setWarningIntervals] = useState<number[]>([30]); // in seconds
-    const maxRounds = boards[selectedIndex].pin_count;
-
-    const handleTimeSelection = (newValue: number | null) => {
-        updateSettings({ timePerImage: newValue })
-        // only keep warning intervals that are less than the new time per image value
-        // i.e. remove warning intervals that are greater than or equal to the new time per image value
-        updateSettings({
-            warningIntervals: newValue === null
-                ? []
-                : warningIntervals.filter((item) => item < newValue)
-        });
-    };
-
     const timeOptions = [
         { label: "30s", value: 30 },
         { label: "60s", value: 60 },
@@ -48,6 +28,32 @@ export function SetupForm({ boards }: Props) {
         { label: "2m left", value: 120 },
         { label: "5m left", value: 300 },
     ]
+
+    const { settings, updateSettings } = useSetupSettings();
+    const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
+    const maxRounds = boards[selectedIndex].pin_count;
+    const presetValues = timeOptions.map(o => o.value);
+    const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
+    const [customMode, setCustomMode] = useState(false);
+    const isCustomTime = customMode || !presetValues.includes(timePerImage);
+
+    // check if custom time is used, and if it is not one of the preset values (30s, 60s, 90s, etc)
+    useEffect(() => {
+        if (timePerImage !== null && !presetValues.includes(timePerImage)) {
+            setCustomTimeValue(timePerImage);
+        }
+    }, [timePerImage]);
+
+    const handleTimeSelection = (newValue: number | null) => {
+        updateSettings({ timePerImage: newValue })
+        // only keep warning intervals that are less than the new time per image value
+        // i.e. remove warning intervals that are greater than or equal to the new time per image value
+        updateSettings({
+            warningIntervals: newValue === null
+                ? []
+                : warningIntervals.filter((item) => item < newValue)
+        });
+    };
 
     // package data into URL to be sent to Practice page
     const practiceUrl = {
@@ -117,13 +123,52 @@ export function SetupForm({ boards }: Props) {
                                 <button
                                     key={value}
                                     onClick={() => {
+                                        setCustomMode(false);
                                         handleTimeSelection(value)
                                     }}
-                                    className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage ? "setting-button-active" : ""}`}
+                                    className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
                                 >
                                     {label}
                                 </button>
                             ))}
+                        </div>
+                        <div className="flex gap-[1.5vh] xl:gap-[1vw] mt-[1vh] xl:mt-[1vw]">
+                            {/* Custom button alongside time options */}
+                            <button
+                                onClick={() => {
+                                    setCustomMode(true);
+                                    updateSettings({timePerImage: customTimeValue});
+                                }}
+                                className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${isCustomTime ? "setting-button-active" : ""}`}
+                            >
+                                Custom
+                            </button>
+                            {/* Revealed input */}
+                            {isCustomTime && (
+                                <motion.div
+                                    className="flex items-end gap-[1vh] xl:gap-[0.5vw]"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{
+                                        duration: 0.1,
+                                        ease: "easeIn"
+                                    }}
+                                >
+                                    <input
+                                        type="number"
+                                        value={customTimeValue}
+                                        onChange={(e) => {
+                                            const val = Number(e.target.value) || 0;
+                                            setCustomTimeValue(val);
+                                            updateSettings({timePerImage: val});
+                                        }}
+                                        placeholder="1200"
+                                        className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-[8vh] xl:w-[5vw] h-10 xl:h-[2vw] text-center
+                                            [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                    <span className="text-custom-gray">seconds</span>
+                                </motion.div>
+                            )}
                         </div>
                     </div>
                     <div>
@@ -146,7 +191,8 @@ export function SetupForm({ boards }: Props) {
                                     >
                                         <div
                                             className={`w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center`}>
-                                            {isSelected && <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
+                                            {isSelected &&
+                                                <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
                                         </div>
                                         {label}
                                     </button>
