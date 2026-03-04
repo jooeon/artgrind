@@ -53,6 +53,9 @@ export default async function PracticePage({
         throw new Error("No index provided");
     }
 
+    const rawTime = time as string;
+    const parsedTime = rawTime === "null" ? null : Number(rawTime);
+
     // parse intervals as numbers
     const parsedIntervals = intervals
         ? (Array.isArray(intervals) ? intervals : [intervals]).map(Number)
@@ -71,7 +74,7 @@ export default async function PracticePage({
                     <PracticeSession
                         pins={data.items}
                         rounds={Number(rounds)}
-                        timePerImage={Number(time)}
+                        timePerImage={parsedTime}
                         warnIntervals={parsedIntervals}
                     />
                 </section>

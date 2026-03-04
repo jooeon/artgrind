@@ -27,8 +27,8 @@ export default async function Home() {
                 </p>
             </div>
             {/* Login Section */}
-            <section className="flex flex-col xl:flex-row items-center xl:justify-center gap-[5vh] xl:gap-[10vw] flex-1
-                w-full h-1/2 mt-[15vh] xl:mt-[8vw] xl:px-[5vw]">
+            <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[10vw] flex-1
+                w-full h-1/2 mt-[10vh] xl:mt-[8vw] xl:px-[5vw]">
                 <div className="relative flex flex-col gap-[2.5vh] xl:gap-[1.5vw] w-fit h-full font-neue-haas">
                     <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[5vh] xl:text-[3.75vw] leading-none text-center xl:text-start">to
                         get started:</h2>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import {usePathname} from "next/navigation";
 
 type CursorState = "default" | "hover" | "click";
 
@@ -9,6 +10,8 @@ export default function Cursor() {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isVisible, setIsVisible] = useState(false);
     const [cursorState, setCursorState] = useState<CursorState>("default");
+
+    const pathname = usePathname();
 
     useEffect(() => {
         const move = (e: MouseEvent) => {
@@ -60,8 +63,10 @@ export default function Cursor() {
 
     if (!isVisible) return null;
 
+    if (pathname === "/practice") return;
+
     return (
-        <>
+        <div className="hidden xl:block">
             <style>{`* { cursor: none !important; }`}</style>
             <motion.div
                 className="fixed top-0 left-0 pointer-events-none z-[999]"
@@ -108,6 +113,6 @@ export default function Cursor() {
 
                 )}
             </motion.div>
-        </>
+        </div>
     );
 }

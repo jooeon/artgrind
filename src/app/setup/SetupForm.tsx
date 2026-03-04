@@ -1,26 +1,34 @@
 "use client";
-import React, {useState} from "react";
+import React from "react";
 import BoardCarousel from "@/app/setup/BoardCarousel";
 import type { Board } from "./BoardCarousel";
 import Link from "next/link";
 import { motion } from "motion/react";
+import {useSetupSettings} from "@/app/hooks/useSetupSettings";
 
 type Props = {
     boards: Board[];
 }
 
 export function SetupForm({ boards }: Props) {
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const [numberOfRounds, setNumberOfRounds] = useState<number>(5);
-    const [timePerImage, setTimePerImage] = useState<number>(60); // stored in seconds
-    const [warningIntervals, setWarningIntervals] = useState<number[]>([30]); // in seconds
+    const { settings, updateSettings } = useSetupSettings();
+    const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
+
+    // const [selectedIndex, setSelectedIndex] = useState(0);
+    // const [numberOfRounds, setNumberOfRounds] = useState<number>(5);
+    // const [timePerImage, setTimePerImage] = useState<number>(60); // stored in seconds
+    // const [warningIntervals, setWarningIntervals] = useState<number[]>([30]); // in seconds
     const maxRounds = boards[selectedIndex].pin_count;
 
-    const handleTimeSelection = (newValue: number) => {
-        setTimePerImage(newValue);
+    const handleTimeSelection = (newValue: number | null) => {
+        updateSettings({ timePerImage: newValue })
         // only keep warning intervals that are less than the new time per image value
         // i.e. remove warning intervals that are greater than or equal to the new time per image value
-        setWarningIntervals((prev) => prev.filter((item) => item < newValue));
+        updateSettings({
+            warningIntervals: newValue === null
+                ? []
+                : warningIntervals.filter((item) => item < newValue)
+        });
     };
 
     const timeOptions = [
@@ -30,6 +38,7 @@ export function SetupForm({ boards }: Props) {
         { label: "2m", value: 120 },
         { label: "5m", value: 300 },
         { label: "10m", value: 600 },
+        { label: "Unlimited", value: null },
     ];
 
     const warningOptions = [
@@ -46,7 +55,7 @@ export function SetupForm({ boards }: Props) {
         query: {
             index: boards[selectedIndex].id,
             rounds: numberOfRounds,
-            time: timePerImage,
+            time: timePerImage === null ? "null" : timePerImage,
             intervals: warningIntervals,
         },
     };
@@ -56,7 +65,7 @@ export function SetupForm({ boards }: Props) {
             <BoardCarousel
                 boards={boards}
                 selectedIndex={selectedIndex}
-                onSelect={setSelectedIndex}
+                onSelect={(i) => updateSettings({ selectedIndex: i })}
             />
             <motion.section
                 className="flex flex-1 justify-center items-center w-full"
@@ -73,7 +82,7 @@ export function SetupForm({ boards }: Props) {
                         <p>Number of practice rounds:</p>
                         <div className="flex items-center gap-[0.5vh] xl:gap-[0.5vw] mt-[1.5vh] xl:mt-[1vw]">
                             <button
-                                onClick={() => setNumberOfRounds(prev => Math.max(1, prev - 1))}
+                                onClick={() => updateSettings({ numberOfRounds: Math.max(1, numberOfRounds - 1) })}
                                 disabled={numberOfRounds <= 1}
                                 className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
                             >
@@ -81,19 +90,19 @@ export function SetupForm({ boards }: Props) {
                             </button>
                             <input type="number"
                                    value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds}
-                                   onChange={(e) => setNumberOfRounds(Math.min(Number(e.target.value) || 0, maxRounds))}
+                                   onChange={(e) => updateSettings({ numberOfRounds: Math.min(Number(e.target.value) || 0, maxRounds) })}
                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
                                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                             <button
-                                onClick={() => setNumberOfRounds(prev => Math.min(prev + 1, maxRounds))}
+                                onClick={() => updateSettings({ numberOfRounds: Math.min(numberOfRounds + 1, maxRounds) })}
                                 disabled={numberOfRounds >= maxRounds}
                                 className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
                             >
                                 +
                             </button>
                             <button
-                                onClick={() => setNumberOfRounds(maxRounds)}
+                                onClick={() => updateSettings({ numberOfRounds: maxRounds })}
                                 className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] text-[2vh] xl:text-[1vw] ml-[2vh] xl:ml-[1vw]"
                             >
                                 Max ({boards[selectedIndex].pin_count})
@@ -126,12 +135,12 @@ export function SetupForm({ boards }: Props) {
                                 return (
                                     <button
                                         key={value}
-                                        onClick={() => setWarningIntervals(prev =>
-                                            prev.includes(value)
-                                                ? prev.filter(w => w !== value)  // already selected → remove it
-                                                : [...prev, value]               // not selected → add it
-                                        )}
-                                        disabled={value >= timePerImage}    // only enable button if smaller than selected round time
+                                        onClick={() => updateSettings({
+                                            warningIntervals: warningIntervals.includes(value)
+                                                ? warningIntervals.filter(w => w !== value)
+                                                : [...warningIntervals, value]
+                                        })}
+                                        disabled={timePerImage === null || value >= timePerImage}    // only enable button if smaller than selected round time
                                         className={`setting-button h-10 xl:h-[2vw] px-4 xl:px-[1vw] flex items-center gap-2 xl:gap-[0.5vw]
                                             ${isSelected ? "setting-button-active" : ""}`}
                                     >

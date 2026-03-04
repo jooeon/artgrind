@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {SetupForm} from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
+import ProfilePanel from "@/app/components/ProfilePanel";
 
 // Get the first x boards, sorted by last modified
 async function getBoards() {
@@ -60,17 +61,16 @@ export default async function Setup() {
     // console.log(data)
 
     const user = await getUser();
-    console.log(user);
+    // console.log(user);
 
     const username = await getUsername(user);
 
     return (
         <>
             <main className="flex flex-col min-h-[100vh] justify-between gap-[2vh] xl:gap-[2.5vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
-                <div
-                    className="absolute top-0 right-0 flex flex-col items-end text-gray-dark px-[0.5vh] xl:px-[0.5vw] text-[1.5vh] xl:text-[1vw]">
-                    <p>Logged in as: {username}</p>
-                    <a href="/api/auth/logout" className="underline">Logout</a>
+                <div className="absolute top-0 right-0 flex flex-col items-end
+                    px-[0.5vh] xl:px-[0.25vw] py-[0.5vh] xl:py-[0.25vw] text-[1.5vh] xl:text-[1vw]">
+                    <ProfilePanel username={username} />
                 </div>
                 <SetupForm boards={data}/>
                 <Footer />

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 
@@ -19,7 +19,7 @@ type Pin = {
 type Props = {
     pins: Pin[];
     rounds: number;
-    timePerImage: number; // in seconds
+    timePerImage: number | null; // in seconds
     warnIntervals: number[];
 };
 
@@ -36,15 +36,37 @@ function formatTime(seconds: number): string {
 }
 
 export default function PracticeSession({ pins, rounds, timePerImage, warnIntervals }: Props) {
+    // NOTE: if timePerImage is null, that means time is unlimited
     const [queue] = useState<Pin[]>(() => getRandomOrder(pins, rounds));
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(timePerImage);
+    const [timeLeft, setTimeLeft] = useState<number>(timePerImage ?? 0);
     const [isPaused, setIsPaused] = useState(false);
     const [isSessionOver, setIsSessionOver] = useState(false);
     const [stopClicked, setStopClicked] = useState(false);
+    const [controlsVisible, setControlsVisible] = useState(true);
+    const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Control UI hide after certain time
+    const resetHideTimer = () => {
+        setControlsVisible(true);
+        if (hideTimer.current) clearTimeout(hideTimer.current);
+        hideTimer.current = setTimeout(() => setControlsVisible(false), 3000);
+    };
 
     useEffect(() => {
-        if (isPaused) return;
+        resetHideTimer();
+        // window.addEventListener("mousemove", resetHideTimer);
+        window.addEventListener("click", resetHideTimer);
+
+        return () => {
+            // window.removeEventListener("mousemove", resetHideTimer);
+            window.removeEventListener("click", resetHideTimer);
+            if (hideTimer.current) clearTimeout(hideTimer.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isPaused || timePerImage === null) return;
 
         if (warnIntervals.includes(timeLeft)) {
             const audio = new Audio("/audio/chime.mp3");
@@ -67,7 +89,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft, currentIndex, isPaused]);
+    }, [timeLeft, currentIndex, isPaused, timePerImage]);
 
     const currentPin = queue[currentIndex];
 
@@ -80,34 +102,88 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                     {currentIndex+1}/{rounds}
                 </p>
             </div>
-            <div className="flex gap-[1vh] xl:gap-[2vw] absolute bottom-0 xl:top-0 left-0 pl-[0.75vw] text-white font-bold text-[3.5vh] xl:text-[3vw]">
-                <p className={`${isPaused ? 'text-gray-light' : ''}`}>{formatTime(timeLeft)}</p>
+            <div className="flex gap-[1vh] xl:gap-[2vw] absolute bottom-0 xl:top-0 left-0 pl-[0.75vw] text-white uppercase font-bold text-[3.5vh] xl:text-[3vw]">
+                <p className={`${isPaused ? 'text-gray-light' : ''}`}>
+                    {timePerImage !== null ? formatTime(timeLeft) : 'Unlimited'}
+                </p>
                 {isPaused && (
                     <p className="">PAUSED</p>
                 )}
             </div>
             {/* Controls UI */}
-            <div
-                className="flex flex-col justify-center items-center gap-[1vw] absolute right-0 h-[100vh] w-[3vw] bg-white">
+            <motion.div
+                animate={{ opacity: controlsVisible ? 1 : 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="flex justify-center items-center gap-[4vh] xl:gap-[2vw]
+                absolute bottom-[15vh] xl:bottom-[4vw] bg-black/40 backdrop-blur-md
+                px-[4vh] py-[2vh] xl:px-[2.5vw] xl:py-[1.5vw] xl:p-0 rounded-lg">
+                {/* Backward */}
+                <button
+                    onClick={() => {
+                        setCurrentIndex(currentIndex - 1);
+                        setTimeLeft(timePerImage ?? 0);
+                    }}
+                    disabled={currentIndex == 0}
+                    className="cursor-pointer"
+                >
+                    <div className="w-8 h-8 xl:w-[1.2vw] xl:h-[1.2vw] flex items-center justify-center">
+                        <svg width="97" height="54" viewBox="0 0 97 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clipPath="url(#clip0_153_313)">
+                                <path
+                                    d="M96.3123 49.0449V4.95516C96.3123 1.16185 92.1814 -1.24124 88.8846 0.665343L50.743 22.7102C47.4363 24.6069 47.4363 29.3932 50.743 31.2998L88.8846 53.3446C92.1913 55.2413 96.3123 52.8481 96.3123 49.0548V49.0449Z"
+                                    fill="white"/>
+                                <path
+                                    d="M40.6142 0.665343L2.4726 22.7102C-0.834129 24.6069 -0.834129 29.3932 2.4726 31.2998L40.6142 53.3446C43.9209 55.2413 48.0419 52.8481 48.0419 49.0548V4.95516C48.0419 1.16185 43.911 -1.24124 40.6142 0.665343Z"
+                                    fill="white"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_153_313">
+                                    <rect width="96.3122" height="54" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                </button>
                 {/* Play/Pause */}
                 <button
                     onClick={() => setIsPaused(!isPaused)}
+                    disabled={timePerImage === null}
                     className="cursor-pointer"
                 >
                     <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
                         {isPaused ?
-                            <svg viewBox="0 0 20 23" fill="none"
+                            <svg viewBox="0 0 49 54" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M19.5 10.5278C20.1667 10.9127 20.1667 11.8749 19.5 12.2598L1.5 22.6521C0.833331 23.037 -1.09987e-06 22.5559 -1.06622e-06 21.7861L-1.57697e-07 1.00149C-1.24048e-07 0.231692 0.833334 -0.249432 1.5 0.135468L19.5 10.5278Z"
-                                    fill="#131313"/>
+                                <g clipPath="url(#clip0_153_310)">
+                                    <path
+                                        d="M7.48996 53.3347L45.9 31.2898C49.23 29.3931 49.23 24.6068 45.9 22.7002L7.48996 0.655364C4.15996 -1.24129 0.00996479 1.15187 0.00996446 4.94518L0.00996061 49.0448C0.00996028 52.8382 4.16996 55.2412 7.48996 53.3347Z"
+                                        fill="white"/>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_153_310">
+                                        <rect width="48.39" height="54" fill="white"
+                                              transform="translate(48.39 54) rotate(-180)"/>
+                                    </clipPath>
+                                </defs>
                             </svg>
                             :
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"
-                                 fill="none">
-                                <path d="M7 1H2V15H7V1Z" fill="#131313"/>
-                                <path d="M14 1H9V15H14V1Z" fill="#131313"/>
+                            <svg width="56" height="67" viewBox="0 0 56 67" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g clipPath="url(#clip0_155_333)">
+                                    <path
+                                        d="M16.93 0H5.37C2.40423 0 0 2.40423 0 5.37V61.31C0 64.2758 2.40423 66.68 5.37 66.68H16.93C19.8958 66.68 22.3 64.2758 22.3 61.31V5.37C22.3 2.40423 19.8958 0 16.93 0Z"
+                                        fill="white"/>
+                                    <path
+                                        d="M49.79 0H38.23C35.2642 0 32.86 2.40423 32.86 5.37V61.31C32.86 64.2758 35.2642 66.68 38.23 66.68H49.79C52.7558 66.68 55.16 64.2758 55.16 61.31V5.37C55.16 2.40423 52.7558 0 49.79 0Z"
+                                        fill="white"/>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_155_333">
+                                        <rect width="55.16" height="66.68" fill="white"/>
+                                    </clipPath>
+                                </defs>
                             </svg>
+
                         }
                     </div>
                 </button>
@@ -115,64 +191,45 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                 <button
                     onClick={() => {
                         setCurrentIndex(currentIndex + 1);
-                        setTimeLeft(timePerImage);
+                        setTimeLeft(timePerImage ?? 0);
                     }}
                     disabled={currentIndex === rounds - 1}
                     className="cursor-pointer"
                 >
-                    <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clipPath="url(#clip0_40_130)">
+                    <div className="w-8 h-8 xl:w-[1.2vw] xl:h-[1.2vw] flex items-center justify-center">
+                        <svg width="97" height="54" viewBox="0 0 97 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clipPath="url(#clip0_153_323)">
                                 <path
-                                    d="M10.6848 1.61016C10.8501 1.52924 11.0413 1.55269 11.1832 1.66176L23.8217 11.6312C23.9308 11.7226 24 11.8563 24 11.9982C24 12.1401 23.9308 12.2797 23.8217 12.3688L11.1844 22.3371C11.0988 22.4039 10.9932 22.4379 10.8924 22.4379L10.686 22.391C10.5241 22.3159 10.4221 22.1506 10.4221 21.9688V2.03234C10.4221 1.85526 10.5241 1.68638 10.6848 1.61016Z"
-                                    fill="#131313"/>
+                                    d="M0 4.95517V49.0449C0 52.8382 4.13093 55.2413 7.42773 53.3347L45.5693 31.2899C48.8761 29.3932 48.8761 24.6069 45.5693 22.7003L7.42773 0.665359C4.13093 -1.23129 0 1.16187 0 4.95517Z"
+                                    fill="white"/>
                                 <path
-                                    d="M0.261732 1.61016C0.428261 1.52924 0.619417 1.55269 0.761317 1.66176L13.3999 11.6312C13.5101 11.7226 13.5781 11.8563 13.5781 11.9982C13.5781 12.1401 13.5089 12.2797 13.3999 12.3688L0.761317 22.3371C0.676881 22.4039 0.571336 22.4379 0.470481 22.4379L0.261732 22.391C0.101068 22.3159 0.000213623 22.1506 0.000213623 21.9688V2.03234C0.000213623 1.85526 0.101068 1.68638 0.261732 1.61016Z"
-                                    fill="#131313"/>
+                                    d="M55.698 53.3347L93.8396 31.2899C97.1463 29.3932 97.1463 24.6069 93.8396 22.7003L55.698 0.665359C52.3913 -1.23129 48.2703 1.16187 48.2703 4.95517V49.0449C48.2703 52.8382 52.4012 55.2413 55.698 53.3347Z"
+                                    fill="white"/>
                             </g>
+                            <defs>
+                                <clipPath id="clip0_153_323">
+                                    <rect width="96.3122" height="54" fill="white"/>
+                                </clipPath>
+                            </defs>
                         </svg>
-                    </div>
-                </button>
-                {/* Backward */}
-                <button
-                    onClick={() => {
-                        setCurrentIndex(currentIndex - 1);
-                        setTimeLeft(timePerImage);
-                    }}
-                    disabled={currentIndex == 0}
-                    className="cursor-pointer"
-                >
-                    <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <g clipPath="url(#clip0_40_124)">
-                                <path
-                                    d="M13.3152 1.61016C13.1499 1.52924 12.9587 1.55269 12.8168 1.66176L0.178256 11.6312C0.0691913 11.7226 0 11.8563 0 11.9982C0 12.1401 0.0691913 12.2797 0.178256 12.3688L12.8156 22.3371C12.9012 22.4039 13.0068 22.4379 13.1076 22.4379L13.314 22.391C13.4759 22.3159 13.5779 22.1506 13.5779 21.9688V2.03234C13.5779 1.85526 13.4759 1.68638 13.3152 1.61016Z"
-                                    fill="#131313"/>
-                                <path
-                                    d="M23.7383 1.61016C23.5717 1.52924 23.3806 1.55269 23.2387 1.66176L10.6001 11.6312C10.4899 11.7226 10.4219 11.8563 10.4219 11.9982C10.4219 12.1401 10.4911 12.2797 10.6001 12.3688L23.2387 22.3371C23.3231 22.4039 23.4287 22.4379 23.5295 22.4379L23.7383 22.391C23.8989 22.3159 23.9998 22.1506 23.9998 21.9688V2.03234C23.9998 1.85526 23.8989 1.68638 23.7383 1.61016Z"
-                                    fill="#131313"/>
-                            </g>
-                        </svg>
-
                     </div>
                 </button>
                 {/* Stop */}
                 <button
                     onClick={() => {
                         setStopClicked(true);
-                        setIsPaused(true)
+                        if (timePerImage !== null) setIsPaused(true);
                     }}
                     disabled={stopClicked}
                     className="cursor-pointer"
                 >
                     <div className="w-6 h-6 xl:w-[1vw] xl:h-[1vw] flex items-center justify-center">
-                        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="16" height="16" rx="1" fill="#131313"/>
+                        <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="54" height="54" rx="6" fill="white"/>
                         </svg>
                     </div>
                 </button>
-            </div>
+            </motion.div>
             {stopClicked && (
                 <motion.div
                     className="fixed w-full h-full flex justify-center items-center"
@@ -200,14 +257,14 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                         {/* X button */}
                         <button
                             onClick={() => setStopClicked(false)}
-                            className="absolute top-[0.75vw] right-[1vw] z-20 text-white cursor-pointer"
+                            className="absolute top-[0.8vh] xl:top-[0.75vw] right-[1.4vh] xl:right-[1vw] z-20 text-white cursor-pointer"
                         >
                             ✕
                         </button>
 
-                        <p className="z-10 text-center text-[4vw] font-fornire leading-none lowercase">Would you really like to quit?</p>
+                        <p className="z-10 text-center text-[4vh] xl:text-[4vw] font-fornire leading-none lowercase">Would you really like to quit?</p>
                         <div className="z-10 m-auto">
-                            <Link href="/setup" className="button button-white w-fit">
+                            <Link href="/setup" className="button button-white w-fit cursor-pointer!">
                                 Quit
                             </Link>
                         </div>
@@ -241,12 +298,12 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                             ease: "easeOut",
                         }}
                     >
-                        <p className="z-10 text-center text-[4vw] font-fornire leading-none lowercase">Practice session
+                        <p className="z-10 text-center text-[6vh] xl:text-[4vw] font-fornire leading-none lowercase">Practice session
                             complete.</p>
-                        <p className="z-10 text-center text-[1.35vw] font-semibold">Congratulations! You&#39;ve completed the
+                        <p className="z-10 text-center text-[2vh] xl:text-[1.35vw] font-semibold">Congratulations! You&#39;ve completed the
                             practice session you&#39;ve committed to.</p>
                         <div className="z-10 m-auto">
-                            <Link href="/setup" className="button button-white w-fit">
+                            <Link href="/setup" className="button button-white w-fit cursor-pointer!">
                                 Finish
                             </Link>
                         </div>
