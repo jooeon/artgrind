@@ -51,7 +51,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                     <div className="flex items-start gap-[1vh] xl:gap-[0.75vw]">
                         <Button onClick={() => router.push("/setup")}
                                 className="setting-button w-[3.5vh] xl:w-[2.1vw] h-[3.5vh] xl:h-[2.1vw]">
-                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="100%" height="100%" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 31.6666L8.33337 19.9999L20 8.33325" stroke="#6A6A6A" strokeWidth="2"
                                       strokeLinecap="round" strokeLinejoin="round"/>
                                 <path d="M31.6667 20H8.33337" stroke="#6A6A6A" strokeWidth="2" strokeLinecap="round"
