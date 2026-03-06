@@ -27,16 +27,32 @@ type Props = {
 const getAnimationDelays = (count: number) =>
     Array.from({ length: count }, () => Math.random() * 0.5);
 
+const getColumnCount = () => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth >= 1280) return 8;  // xl
+    if (window.innerWidth >= 768) return 4;   // md
+    return 3;
+};
+
 export default function FilterClient({ pins, boardId, boardName }: Props) {
     const { excluded, togglePin, selectAll, deselectAll } = useExcludedPins(boardId);
     const router = useRouter();
     const includedCount = pins.length - excluded.length;
     const animationDelays = useRef(getAnimationDelays(pins.length));
     const mounted = useRef(false);  // Used to differentiate animation (delay, duration) from initial load
-    const columnCount = 3;
+    const [columnCount, setColumnCount] = useState(getColumnCount());
+    let globalIndex = 0;
     const columns: typeof pins[number][][] = Array.from({ length: columnCount }, () => []);
     pins.forEach((pin, i) => columns[i % columnCount].push(pin));
 
+    // set how many columns to have based on screen size
+    useEffect(() => {
+        const handleResize = () => setColumnCount(getColumnCount());
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // For calculating "mounting" time based on time of initial animation completion
     useEffect(() => {
         const maxDelay = Math.max(...animationDelays.current) * 1000; // convert to ms
         setTimeout(() => {
@@ -73,10 +89,11 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                     </div>
                 </div>
 
-                <div className="flex gap-[2vh] xl:gap-[0.7vw] items-start">
+                <div className="flex gap-[1.75vh] xl:gap-[1vw] items-start">
                 {columns.map((column, colIndex) => (
-                    <div key={colIndex} className="flex flex-col gap-[2vh] xl:gap-[0.7vw] flex-1">
+                    <div key={colIndex} className="flex flex-col flex-1">
                     {column.map((pin, i) => {
+                        const currentIndex = globalIndex++;
                         const isExcluded = excluded.includes(pin.id);
                         return (
                             <motion.div
@@ -84,19 +101,13 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: isExcluded ? 0.4 : 1, y: 0 }}
                                 transition={{
-                                    delay: mounted.current ? 0 : animationDelays.current[i],
+                                    delay: mounted.current ? 0 : animationDelays.current[currentIndex],
                                     duration: mounted.current ? 0.3 : 0.5,
                                     ease: "easeOut",
                                 }}
                                 onClick={() => togglePin(pin.id)}
                                 className={`break-inside-avoid mb-[3vh] xl:mb-[2.25vw] cursor-pointer relative rounded-2xl overflow-hidden
-                                    [mask-image:radial-gradient(white,white)] [-webkit-mask-image:radial-gradient(white,white)] [transform:translateZ(0)] [-webkit-transform:translateZ(0)]
                                     ${isExcluded ? "grayscale" : "ring-[0.3vh] xl:ring-[0.2vw] ring-gray-800"}`}
-                                style={{
-                                    willChange: "opacity",
-                                    transform: "translateZ(0)",
-                                    WebkitTransform: "translateZ(0)",
-                                }}
                             >
                                 <img
                                     src={pin.media.images["600x"].url}
