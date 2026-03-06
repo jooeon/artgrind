@@ -76,7 +76,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                         return (
                             <motion.div
                                 key={pin.id}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={false}
                                 animate={{ opacity: isExcluded ? 0.4 : 1, y: 0 }}
                                 transition={{
                                     delay: mounted.current ? 0 : animationDelays.current[i],
