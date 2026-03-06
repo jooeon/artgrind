@@ -66,13 +66,24 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         };
     }, []);
 
+    // Audio locked on iOS until first user interaction, bypass this by adding a touch event that unlocks it
+    useEffect(() => {
+        const unlockAudio = () => {
+            const audio = new Audio("/audio/chime.mp3");
+            audio.volume = 0;
+            audio.play().then(() => audio.pause()).catch(() => {});
+        };
+        window.addEventListener("touchstart", unlockAudio, { once: true });
+        return () => window.removeEventListener("touchstart", unlockAudio);
+    }, []);
+
     useEffect(() => {
         if (isPaused || timePerImage === null) return;
 
         if (warnIntervals.includes(timeLeft)) {
             const audio = new Audio("/audio/chime.mp3");
             audio.volume = 0.5;
-            audio.play();
+            audio.play().catch(() => {});
         }
 
         if (timeLeft === 0) {

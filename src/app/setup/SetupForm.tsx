@@ -40,6 +40,17 @@ export function SetupForm({ boards }: Props) {
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
     const isCustomTime = customMode || !presetValues.includes(timePerImage);
+    const [roundsInput, setRoundsInput] = useState(String(numberOfRounds));
+    const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
+
+    // sync when numberOfRounds changes externally (e.g. switching boards)
+    useEffect(() => {
+        setRoundsInput(String(numberOfRounds));
+    }, [numberOfRounds]);
+
+    useEffect(() => {
+        setCustomTimeInput(String(customTimeValue));
+    }, [customTimeValue]);
 
     // Safeguard for when saved selectedIndex in localStorage is larger than the number of boards returned
     useEffect(() => {
@@ -119,16 +130,30 @@ export function SetupForm({ boards }: Props) {
                             >
                                 -
                             </Button>
-                            <input type="number"
-                                   step="1"
-                                   onKeyDown={(e) => {
-                                       if (e.key === ".") e.preventDefault();
-                                   }}
-                                   value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds < 1 ? 1 : maxRounds}
-                                   min="1" max="250"
-                                   onChange={(e) => updateSettings({numberOfRounds: Math.min(Math.floor(Number(e.target.value)) || 1, maxRounds)})}
-                                   className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
-                                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            <input
+                                type="number"
+                                step="1"
+                                onKeyDown={(e) => {
+                                    if (e.key === "." || e.key === "-") e.preventDefault();
+                                }}
+                                value={roundsInput}
+                                min="1" max="250"
+                                onChange={(e) => {
+                                    setRoundsInput(e.target.value);
+                                    const val = Math.floor(Number(e.target.value));
+                                    if (val >= 1) {
+                                        updateSettings({ numberOfRounds: Math.min(val, maxRounds) });
+                                    }
+                                }}
+                                onBlur={() => {
+                                    // when user leaves the field, clamp and restore valid value
+                                    const val = Math.floor(Number(roundsInput));
+                                    const clamped = Math.min(Math.max(val || 1, 1), maxRounds);
+                                    setRoundsInput(String(clamped));
+                                    updateSettings({ numberOfRounds: clamped });
+                                }}
+                                className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
+                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                             <Button
                                 onClick={() => updateSettings({numberOfRounds: Math.min(numberOfRounds + 1, maxRounds)})}
@@ -183,16 +208,27 @@ export function SetupForm({ boards }: Props) {
                                         type="number"
                                         step="1"
                                         onKeyDown={(e) => {
-                                            if (e.key === ".") e.preventDefault();
+                                            if (e.key === "." || e.key === "-") e.preventDefault();
                                         }}
-                                        value={customTimeValue}
+                                        value={customTimeInput}
                                         min="1" max="3600"
-                                        onChange={(e) => {
-                                            const val = Math.min(Math.max(Math.floor(Number(e.target.value)) || 1, 1), 3600);
-                                            setCustomTimeValue(val);
-                                            updateSettings({timePerImage: val});
-                                        }}
                                         placeholder="1200"
+                                        onChange={(e) => {
+                                            setCustomTimeInput(e.target.value);
+                                            const val = Math.floor(Number(e.target.value));
+                                            if (val >= 1) {
+                                                const clamped = Math.min(val, 3600);
+                                                setCustomTimeValue(clamped);
+                                                updateSettings({ timePerImage: clamped });
+                                            }
+                                        }}
+                                        onBlur={() => {
+                                            const val = Math.floor(Number(customTimeInput));
+                                            const clamped = Math.min(Math.max(val || 1, 1), 3600);
+                                            setCustomTimeInput(String(clamped));
+                                            setCustomTimeValue(clamped);
+                                            updateSettings({ timePerImage: clamped });
+                                        }}
                                         className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-[8vh] xl:w-[5vw] h-10 xl:h-[2vw] text-center
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
