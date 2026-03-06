@@ -67,23 +67,50 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     }, []);
 
     // Audio locked on iOS until first user interaction, bypass this by adding a touch event that unlocks it
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const audioBufferRef = useRef<AudioBuffer | null>(null);
+
+    // unlock AudioContext on first touch
     useEffect(() => {
-        const unlockAudio = () => {
-            const audio = new Audio("/audio/chime.mp3");
-            audio.volume = 0;
-            audio.play().then(() => audio.pause()).catch(() => {});
+        audioContextRef.current = new AudioContext();
+
+        const resume = () => {
+            if (audioContextRef.current?.state === "suspended") {
+                audioContextRef.current.resume();
+            }
         };
-        window.addEventListener("touchstart", unlockAudio, { once: true });
-        return () => window.removeEventListener("touchstart", unlockAudio);
-    }, [currentIndex]);
+
+        window.addEventListener("touchstart", resume);
+        window.addEventListener("click", resume);
+
+        return () => {
+            window.removeEventListener("touchstart", resume);
+            window.removeEventListener("click", resume);
+        };
+    }, []);
+
+    const playChime = async () => {
+        try {
+            if (!audioContextRef.current) return;
+
+            if (!audioBufferRef.current) {
+                const response = await fetch("/audio/chime.mp3");
+                const arrayBuffer = await response.arrayBuffer();
+                audioBufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
+            }
+
+            const source = audioContextRef.current.createBufferSource();
+            source.buffer = audioBufferRef.current;
+            source.connect(audioContextRef.current.destination);
+            source.start(0);
+        } catch (e) {}
+    };
 
     useEffect(() => {
         if (isPaused || timePerImage === null) return;
 
         if (warnIntervals.includes(timeLeft)) {
-            const audio = new Audio("/audio/chime.mp3");
-            audio.volume = 0.5;
-            audio.play().catch(() => {});
+            playChime();
         }
 
         if (timeLeft === 0) {
