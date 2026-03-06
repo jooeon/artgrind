@@ -22,11 +22,11 @@ export default async function Home() {
                     <div className="pl-[5vw]">Grind</div>
                     <LandingAnimation />
                 </h1>
-                <p className="absolute bottom-[-10vh] right-[1vw] md:bottom-[-10vh] md:right-[3vw] xl:top-[10vw] xl:right-[20vw]
+                <h2 className="absolute bottom-[-10vh] right-[1vw] md:bottom-[-10vh] md:right-[3vw] xl:top-[10vw] xl:right-[20vw]
                     font-neue-haas lowercase text-[2vh] xl:text-[1.3vw]
                     w-1/2 xl:w-3/12 leading-none text-end xl:text-start">
                     Your timed practice tool to consistently improve your drawing, day-by-day.
-                </p>
+                </h2>
             </div>
             {/* Login Section */}
             <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[10vw] flex-1

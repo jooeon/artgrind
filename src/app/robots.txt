@@ -1,0 +1,10 @@
+export default function robots() {
+    return {
+        rules: {
+            userAgent: "*",
+            allow: "/",
+            disallow: ["/practice", "/setup", "/filter", "/api"],
+        },
+        sitemap: "https://artgrind.art/sitemap.xml",
+    };
+}

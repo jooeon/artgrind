@@ -4,8 +4,21 @@ import Cursor from "@/app/components/Cursor";
 import DrawableBackground from "@/app/components/DrawableBackground";
 
 export const metadata: Metadata = {
-    title: "ArtGrind - Timed Drawing Practice",
-    description: "Created by Joo Eon Park©",
+    title: "ArtGrind — Timed Drawing Practice with Pinterest",
+    description: "Improve your drawing with timed practice sessions using your Pinterest boards. Set custom timers, track rounds, and build a daily art habit.",
+    keywords: "timed drawing practice, Pinterest drawing, gesture drawing timer, art study tool",
+    openGraph: {
+        title: "ArtGrind — Timed Drawing Practice with Pinterest",
+        description: "Timed drawing practice sessions using your Pinterest boards.",
+        url: "https://artgrind.art",
+        siteName: "ArtGrind",
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "ArtGrind — Timed Drawing Practice with Pinterest",
+        description: "Timed drawing practice sessions using your Pinterest boards.",
+    },
     icons: {
         icon: [
             { url: "favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
