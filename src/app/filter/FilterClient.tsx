@@ -115,13 +115,13 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                                     className="w-full h-auto object-contain"
                                 />
                                 <div
-                                    className="absolute top-[0.5vh] xl:top-[0.25vw] right-[0.5vh] xl:right-[0.25vw] w-[2.25vh] xl:w-[1.5vw] h-[2.25vh] xl:h-[1.5vw]">
+                                    className="absolute top-[0.5vh] xl:top-[0.25vw] right-[0.5vh] xl:right-[0.25vw] w-[2.25vh] xl:w-[1.5vw] h-[2.25vh] xl:h-[1.5vw] mix-blend-difference">
                                     {!isExcluded ?
                                         <svg viewBox="0 0 32 32" fill="none"
                                              xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M15 30C6.71551 30 0 23.2846 0 15C0 6.71551 6.71551 0 15 0C23.2846 0 30 6.71551 30 15C30 23.2846 23.2846 30 15 30ZM13.0849 20.5804C13.3166 20.8121 13.6924 20.8121 13.9241 20.5804L23.6901 10.8131C23.9217 10.5814 23.9217 10.2057 23.6899 9.97396L22.4081 8.69216C22.1765 8.46041 21.8007 8.46043 21.5689 8.6922L13.9241 16.3384C13.6924 16.5701 13.3166 16.5702 13.0849 16.3384L9.68061 12.9341C9.44889 12.7024 9.07316 12.7024 8.84142 12.9341L7.55962 14.2159C7.32787 14.4477 7.32787 14.8234 7.55962 15.0551L13.0849 20.5804Z"
-                                                fill="#1f1f1f"/>
+                                                fill="#ffffff"/>
                                         </svg>
                                         :
                                         <svg viewBox="0 0 32 32" fill="none"
