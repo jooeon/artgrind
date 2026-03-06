@@ -33,6 +33,9 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
     const includedCount = pins.length - excluded.length;
     const animationDelays = useRef(getAnimationDelays(pins.length));
     const mounted = useRef(false);  // Used to differentiate animation (delay, duration) from initial load
+    const columnCount = 3;
+    const columns: typeof pins[number][][] = Array.from({ length: columnCount }, () => []);
+    pins.forEach((pin, i) => columns[i % columnCount].push(pin));
 
     useEffect(() => {
         const maxDelay = Math.max(...animationDelays.current) * 1000; // convert to ms
@@ -70,13 +73,15 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                     </div>
                 </div>
 
-                <div className="w-fit columns-3 md:columns-4 xl:columns-8 gap-[1.75vh] xl:gap-[1vw]">
-                    {pins.map((pin, i) => {
+                <div className="flex gap-[2vh] xl:gap-[0.7vw] items-start">
+                {columns.map((column, colIndex) => (
+                    <div key={colIndex} className="flex flex-col gap-[2vh] xl:gap-[0.7vw] flex-1">
+                    {column.map((pin, i) => {
                         const isExcluded = excluded.includes(pin.id);
                         return (
                             <motion.div
                                 key={pin.id}
-                                initial={false}
+                                initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: isExcluded ? 0.4 : 1, y: 0 }}
                                 transition={{
                                     delay: mounted.current ? 0 : animationDelays.current[i],
@@ -119,6 +124,8 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                             </motion.div>
                         );
                     })}
+                </div>
+                ))}
                 </div>
             </div>
         </section>
