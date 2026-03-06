@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
     const boardId = request.nextUrl.searchParams.get("boardId");
     const cookieStore = await cookies();

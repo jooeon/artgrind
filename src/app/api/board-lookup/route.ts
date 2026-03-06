@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 async function getAppToken(): Promise<string | null> {
     const clientId = process.env.PINTEREST_APP_ID!;
     const clientSecret = process.env.PINTEREST_APP_SECRET!;

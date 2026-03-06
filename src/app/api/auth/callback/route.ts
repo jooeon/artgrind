@@ -1,6 +1,8 @@
 import {NextRequest} from "next/server";
 import {cookies} from "next/headers";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
     const code = request.nextUrl.searchParams.get("code");
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback`;

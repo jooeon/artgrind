@@ -5,6 +5,8 @@ import Footer from "@/app/components/Footer";
 import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
 
+export const runtime = "edge";
+
 // Get the first x boards, sorted by last modified
 async function getBoards() {
     const cookieStore = await cookies();

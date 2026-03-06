@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import FilterClient from "./FilterClient";
 
+export const runtime = "edge";
+
 async function getListOfPins(boardId: string) {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;

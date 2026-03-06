@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 export async function GET() {
     const clientId = process.env.PINTEREST_APP_ID!;
     const clientSecret = process.env.PINTEREST_APP_SECRET!;
