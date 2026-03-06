@@ -1,8 +1,20 @@
 "use client";
 
 import { motion } from "motion/react";
+import {MouseEventHandler, ReactNode} from "react";
 
-export default function Button({ children, className, onClick, ...props }) {
+export default function Button({
+   children,
+   className,
+   onClick,
+   ...props
+}: {
+    children: ReactNode;
+    className?: string;
+    onClick?: MouseEventHandler<HTMLButtonElement>;
+    disabled?: boolean;
+    [key: string]: unknown;
+}) {
     return (
         <motion.button
             whileTap={{ scale: 0.84}}

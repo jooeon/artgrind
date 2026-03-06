@@ -15,11 +15,14 @@ async function getListOfPins(boardId: string) {
     return res.json();
 }
 
-export default async function FilterPage({ searchParams }) {
+export default async function FilterPage({
+                                             searchParams
+                                         }: {
+    searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
     const { boardId } = await searchParams;
-    if (!boardId) redirect("/setup");
-
     const { name } = await searchParams;
+    if (!boardId || !name) redirect("/setup");
 
     const data = await getListOfPins(boardId);
     if (!data) redirect("/setup");
