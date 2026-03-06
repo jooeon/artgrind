@@ -75,7 +75,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         };
         window.addEventListener("touchstart", unlockAudio, { once: true });
         return () => window.removeEventListener("touchstart", unlockAudio);
-    }, []);
+    }, [currentIndex]);
 
     useEffect(() => {
         if (isPaused || timePerImage === null) return;
