@@ -3,7 +3,8 @@
 import {useRouter} from "next/navigation";
 import {useExcludedPins} from "@/app/hooks/useExcludedPins";
 import Button from "@/app/components/Button";
-import React from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import { motion } from "motion/react";
 
 type Pin = {
     id: string;
@@ -23,17 +24,30 @@ type Props = {
     boardName: string;
 };
 
+const getAnimationDelays = (count: number) =>
+    Array.from({ length: count }, () => Math.random() * 0.5);
+
 export default function FilterClient({ pins, boardId, boardName }: Props) {
     const { excluded, togglePin, selectAll, deselectAll } = useExcludedPins(boardId);
     const router = useRouter();
     const includedCount = pins.length - excluded.length;
+    const animationDelays = useRef(getAnimationDelays(pins.length));
+    const mounted = useRef(false);  // Used to differentiate animation (delay, duration) from initial load
+
+    useEffect(() => {
+        const maxDelay = Math.max(...animationDelays.current) * 1000; // convert to ms
+        setTimeout(() => {
+            mounted.current = true;
+        }, maxDelay + 600);
+        return () => clearTimeout(maxDelay);
+    }, []);
 
     // console.log(pins[0].media.images)
 
     return (
         <section className="flex justify-center p-[1.5vh] xl:p-[1.6vw]">
             <div className="flex flex-col justify-center items-center w-fit min-w-[30vw]">
-                <div className="flex justify-between items-center w-full mb-[2vh] xl:mb-[2vw]">
+                <div className="flex justify-between items-center w-full mb-[2vh] xl:mb-[2vw] gap-[1vh]">
                     <div className="flex items-start gap-[1vh] xl:gap-[0.75vw]">
                         <Button onClick={() => router.push("/setup")}
                                 className="setting-button w-[3.5vh] xl:w-[2.1vw] h-[3.5vh] xl:h-[2.1vw]">
@@ -45,31 +59,38 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                             </svg>
                         </Button>
                         <div className="flex flex-col gap-[0.5vh] xl:gap-[0.25vw]">
-                            <p className="font-semibold text-[2.5vh] xl:text-[1.5vw]">{boardName}</p>
+                            <p className="font-semibold text-[2.4vh] xl:text-[1.5vw]">{boardName}</p>
                             <p className="text-gray-dark text-[2vh] xl:text-[1vw]">{includedCount} of {pins.length} pins
                                 selected</p>
                         </div>
                     </div>
-                    <div className="flex gap-[1vh] xl:gap-[0.75vw]">
-                        <Button onClick={selectAll} className="setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw]">Select All</Button>
-                        <Button onClick={() => deselectAll(pins)} className="setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw]">Deselect All</Button>
+                    <div className="flex flex-wrap justify-end gap-[0.75vh] xl:gap-[0.75vw] text-[1.75vh] xl:text-[1vw]">
+                        <Button onClick={selectAll} className="setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] 3xl:px-[1vw]">Select All</Button>
+                        <Button onClick={() => deselectAll(pins)} className="setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] 3xl:px-[1vw]">Deselect All</Button>
                     </div>
                 </div>
 
-                <div className="w-fit flex flex-wrap gap-[2vh] xl:gap-[0.7vw] items-start">
-                    {pins.map((pin) => {
+                <div className="w-fit columns-3 md:columns-4 xl:columns-8 gap-[1.75vh] xl:gap-[1vw]">
+                    {pins.map((pin, i) => {
                         const isExcluded = excluded.includes(pin.id);
                         return (
-                            <div
+                            <motion.div
                                 key={pin.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: isExcluded ? 0.4 : 1, y: 0 }}
+                                transition={{
+                                    delay: mounted.current ? 0 : animationDelays.current[i],
+                                    duration: mounted.current ? 0.3 : 0.5,
+                                    ease: "easeOut",
+                                }}
                                 onClick={() => togglePin(pin.id)}
-                                className={`cursor-pointer relative transition-all rounded-2xl overflow-hidden
-                                    ${isExcluded ? "opacity-40 grayscale" : "opacity-100 ring-3 ring-black"}`}
+                                className={`break-inside-avoid mb-[3vh] xl:mb-[2.25vw] cursor-pointer relative rounded-2xl overflow-hidden
+                                    ${isExcluded ? "grayscale" : "ring-[0.3vh] xl:ring-[0.2vw] ring-gray-800"}`}
                             >
                                 <img
                                     src={pin.media.images["600x"].url}
                                     alt=""
-                                    className="w-[13vh] md:w-[22vw] xl:w-[10vw] h-full object-contain"
+                                    className="w-full h-auto object-contain"
                                 />
                                 <div
                                     className="absolute top-[0.5vh] xl:top-[0.25vw] right-[0.5vh] xl:right-[0.25vw] w-[2.25vh] xl:w-[1.5vw] h-[2.25vh] xl:h-[1.5vw]">
@@ -78,7 +99,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                                              xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M15 30C6.71551 30 0 23.2846 0 15C0 6.71551 6.71551 0 15 0C23.2846 0 30 6.71551 30 15C30 23.2846 23.2846 30 15 30ZM13.0849 20.5804C13.3166 20.8121 13.6924 20.8121 13.9241 20.5804L23.6901 10.8131C23.9217 10.5814 23.9217 10.2057 23.6899 9.97396L22.4081 8.69216C22.1765 8.46041 21.8007 8.46043 21.5689 8.6922L13.9241 16.3384C13.6924 16.5701 13.3166 16.5702 13.0849 16.3384L9.68061 12.9341C9.44889 12.7024 9.07316 12.7024 8.84142 12.9341L7.55962 14.2159C7.32787 14.4477 7.32787 14.8234 7.55962 15.0551L13.0849 20.5804Z"
-                                                fill="black"/>
+                                                fill="#1f1f1f"/>
                                         </svg>
                                         :
                                         <svg viewBox="0 0 32 32" fill="none"
@@ -89,7 +110,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                                         </svg>
                                     }
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })}
                 </div>
