@@ -11,6 +11,7 @@ type Pin = {
         images: {
             "150x150": { url: string };
             "400x300": { url: string };
+            "600x": { url: string };
             "1200x": { url: string };
         };
     };
