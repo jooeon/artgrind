@@ -96,7 +96,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     // console.log("queue:", queue.map(p => p.id));
 
     return (
-        <div className="h-dvh xl:min-h-[100vh] relative flex flex-col items-center">
+        <div className="h-dvh xl:min-h-[100dvh] relative flex flex-col items-center">
             <div className="relative h-fit">
                 <img src={currentPin.media.images["1200x"].url} alt="current_practice_image"
                      className={`object-cover max-h-[90dvh] xl:max-h-[100dvh] xl:h-[100dvh] ${isPaused ? 'opacity-75' : 'opacity-100'}`} />

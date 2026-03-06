@@ -77,7 +77,7 @@ export default async function Setup() {
     return (
         <>
             {boardAvailable ?
-                <main className="flex flex-col min-h-[100vh]">
+                <main className="flex flex-col min-h-[100dvh]">
                     <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw] pt-[5vh] xl:pt-[4vw]">
                         <ProfilePanel username={username} />
                         <SetupForm boards={data}/>
@@ -85,7 +85,7 @@ export default async function Setup() {
                     </div>
                 </main>
             :
-                <div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100vh] p-[2vh]">
+                <div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100dvh] p-[2vh]">
                     <ProfilePanel username={username} />
                     <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>
                     <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">

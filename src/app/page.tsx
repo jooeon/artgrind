@@ -14,7 +14,7 @@ export default async function Home() {
     if (token) redirect("/setup");
 
     return (
-        <main className="flex flex-col min-h-[100vh] relative w-full">
+        <main className="flex flex-col min-h-[100dvh] relative w-full">
             <div className="flex flex-col flex-1 px-[1.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
                 <div className="relative">
                     <h1 className="flex flex-col
