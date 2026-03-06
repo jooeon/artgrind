@@ -33,12 +33,20 @@ export function SetupForm({ boards }: Props) {
 
     const { settings, updateSettings } = useSetupSettings();
     const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
-    const { excluded } = useExcludedPins(boards[selectedIndex].id);
-    const maxRounds = Math.min(boards[selectedIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
+    const safeIndex = Math.min(selectedIndex, boards.length - 1);
+    const { excluded } = useExcludedPins(boards[safeIndex].id);
+    const maxRounds = Math.min(boards[safeIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
     const presetValues = timeOptions.map(o => o.value);
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
     const isCustomTime = customMode || !presetValues.includes(timePerImage);
+
+    // Safeguard for when saved selectedIndex in localStorage is larger than the number of boards returned
+    useEffect(() => {
+        if (selectedIndex >= boards.length) {
+            updateSettings({ selectedIndex: 0 });
+        }
+    }, []);
 
     // check if custom time is used, and if it is not one of the preset values (30s, 60s, 90s, etc)
     useEffect(() => {
@@ -46,6 +54,13 @@ export function SetupForm({ boards }: Props) {
             setCustomTimeValue(timePerImage);
         }
     }, [timePerImage]);
+
+    // numberOfRounds validity check
+    useEffect(() => {
+        if (numberOfRounds <= 0 || numberOfRounds > maxRounds) {
+            updateSettings({ numberOfRounds: maxRounds });
+        }
+    }, [maxRounds]);
 
     const handleTimeSelection = (newValue: number | null) => {
         updateSettings({ timePerImage: newValue })
@@ -62,7 +77,7 @@ export function SetupForm({ boards }: Props) {
     const practiceUrl = {
         pathname: '/practice',
         query: {
-            index: boards[selectedIndex].id,
+            index: boards[safeIndex].id,
             rounds: numberOfRounds,
             time: timePerImage === null ? "null" : timePerImage,
             intervals: warningIntervals,
@@ -73,7 +88,7 @@ export function SetupForm({ boards }: Props) {
         <>
             <BoardCarousel
                 boards={boards}
-                selectedIndex={selectedIndex}
+                selectedIndex={safeIndex}
                 maxRounds={maxRounds}
                 onSelect={(i) => {
                     const newMax = Math.min(boards[i].pin_count, 250);
@@ -109,7 +124,7 @@ export function SetupForm({ boards }: Props) {
                                    onKeyDown={(e) => {
                                        if (e.key === ".") e.preventDefault();
                                    }}
-                                   value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds}
+                                   value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds < 1 ? 1 : maxRounds}
                                    min="1" max="250"
                                    onChange={(e) => updateSettings({numberOfRounds: Math.min(Math.floor(Number(e.target.value)) || 1, maxRounds)})}
                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
@@ -212,7 +227,12 @@ export function SetupForm({ boards }: Props) {
                             })}
                         </div>
                     </div>
-                    <Link href={practiceUrl} className="button w-full">
+                    <Link
+                        href={practiceUrl}
+                        className={`button w-full block text-center ${maxRounds < 1 ? "disabled" : ""}`}
+                        aria-disabled={maxRounds < 1}
+                        onClick={(e) => maxRounds < 1 && e.preventDefault()}
+                    >
                         Start timed practice
                     </Link>
                     {/* shadow box */}

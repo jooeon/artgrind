@@ -4,6 +4,8 @@ import {SetupForm} from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
+import CharacterAnimation from "@/app/components/CharacterAnimation";
+import Link from "next/link";
 
 export const runtime = "edge";
 
@@ -57,10 +59,15 @@ async function getUsername(user: any) {
 
 export default async function Setup() {
     const data = await getBoards();
+    let boardAvailable = false;
 
     if (!data) redirect("/");
 
-    // console.log(data)
+    if (data.length !== 0) {
+        boardAvailable = true;
+    }
+
+    console.log(data)
 
     const user = await getUser();
     // console.log(user);
@@ -69,14 +76,22 @@ export default async function Setup() {
 
     return (
         <>
-            <main className="flex flex-col min-h-[100vh] justify-between gap-[2vh] xl:gap-[2.5vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
-                <div className="absolute top-0 right-0 flex flex-col items-end
-                    px-[0.5vh] xl:px-[0.25vw] py-[0.5vh] xl:py-[0.25vw] text-[1.5vh] xl:text-[1vw]">
+            {boardAvailable ?
+                <main className="flex flex-col min-h-[100vh] justify-between gap-[2vh] xl:gap-[2.5vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
                     <ProfilePanel username={username} />
+                    <SetupForm boards={data}/>
+                    <Footer />
+                </main>
+            :
+                <div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100vh] p-[2vh]">
+                    <ProfilePanel username={username} />
+                    <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>
+                    <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">
+                        I created a board
+                    </Link>
+                    <CharacterAnimation />
                 </div>
-                <SetupForm boards={data}/>
-                <Footer />
-            </main>
+            }
         </>
     );
 }

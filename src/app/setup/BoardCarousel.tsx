@@ -23,13 +23,9 @@ type Props = {
 export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSelect }: Props) {
     const getIndex = (offset: number) => (selectedIndex + offset + boards.length) % boards.length;
 
-    const visibleBoards = [
-        { board: boards[getIndex(-1)], offset: -1 },
-        { board: boards[getIndex(0)],  offset: 0  },
-        { board: boards[getIndex(1)],  offset: 1  },
-    ];
+    const offsets = boards.length === 1 ? [0] : boards.length === 2 ? [-1, 0] : [-1, 0, 1];
 
-    // console.log(boards[0])
+    const visibleBoards = offsets.map(offset => ({ board: boards[getIndex(offset)], offset }));
 
     return (
         <>
@@ -44,17 +40,25 @@ export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSele
                         data-clickable={`${offset === 0 ? "false" : "true"}`}
                     >
                         <div className="w-full flex justify-center gap-[2px]">
-                            <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
-                                 className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl
-                                    ${offset === 0 ? "xl:w-[13vw] xl:h-[13vw]" : "xl:w-[11vw] xl:h-[11vw]"}`}/>
-                            <div className="flex flex-col gap-[2px]">
-                                <img src={board.media.pin_thumbnail_urls[0]} alt="pinterest_board_thumbnail_2"
-                                     className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-tr-2xl
-                                        ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
-                                <img src={board.media.pin_thumbnail_urls[1]} alt="pinterest_board_thumbnail_3"
-                                     className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-br-2xl
-                                        ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
-                            </div>
+                            {board.media.image_cover_url ?
+                                <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
+                                     className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl ${!board.media.pin_thumbnail_urls[1] ? "rounded-r-2xl" : ""}
+                                        ${offset === 0 ? "xl:w-[13vw] xl:h-[13vw]" : "xl:w-[11vw] xl:h-[11vw]"}`}/>
+                                :
+                                <div>
+                                    Add pins to your board first!
+                                </div>
+                            }
+                            {board.media.pin_thumbnail_urls[1] &&
+                                <div className="flex flex-col gap-[2px]">
+                                    <img src={board.media.pin_thumbnail_urls[0]} alt="pinterest_board_thumbnail_2"
+                                         className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-tr-2xl
+                                            ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
+                                    <img src={board.media.pin_thumbnail_urls[1]} alt="pinterest_board_thumbnail_3"
+                                         className={`w-[6vh] h-[6vh] min-w-[7vh] object-cover rounded-br-2xl
+                                            ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
+                                </div>
+                            }
                         </div>
                         <div className="flex mt-[1vh] xl:mt-[0.6vw] xl:pl-[0.5vw]">
                             <div className="flex flex-col">

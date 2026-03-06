@@ -32,7 +32,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
 
     return (
         <section className="flex justify-center p-[1.5vh] xl:p-[1.6vw]">
-            <div className="flex flex-col justify-center items-center w-fit">
+            <div className="flex flex-col justify-center items-center w-fit min-w-[30vw]">
                 <div className="flex justify-between items-center w-full mb-[2vh] xl:mb-[2vw]">
                     <div className="flex items-start gap-[1vh] xl:gap-[0.75vw]">
                         <Button onClick={() => router.push("/setup")}

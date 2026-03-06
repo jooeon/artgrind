@@ -6,7 +6,7 @@ export const runtime = "edge";
 export async function GET(request: NextRequest) {
     const code = request.nextUrl.searchParams.get("code");
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback`;
-    const credentials = Buffer.from(`${process.env.PINTEREST_APP_ID}:${process.env.PINTEREST_APP_SECRET}`).toString("base64");
+    const credentials = btoa(`${process.env.PINTEREST_APP_ID}:${process.env.PINTEREST_APP_SECRET}`)
 
     if (!code) {
         return new Response ("No code provided", {status: 400});
