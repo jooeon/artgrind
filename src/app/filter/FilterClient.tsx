@@ -85,6 +85,7 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
                                 }}
                                 onClick={() => togglePin(pin.id)}
                                 className={`break-inside-avoid mb-[3vh] xl:mb-[2.25vw] cursor-pointer relative rounded-2xl overflow-hidden
+                                    [mask-image:radial-gradient(white,white)] [-webkit-mask-image:radial-gradient(white,white)]
                                     ${isExcluded ? "grayscale" : "ring-[0.3vh] xl:ring-[0.2vw] ring-gray-800"}`}
                             >
                                 <img
