@@ -5,6 +5,8 @@ import type { Board } from "./BoardCarousel";
 import Link from "next/link";
 import { motion } from "motion/react";
 import {useSetupSettings} from "@/app/hooks/useSetupSettings";
+import {useExcludedPins} from "@/app/hooks/useExcludedPins";
+import Button from "../components/Button";
 
 type Props = {
     boards: Board[];
@@ -31,7 +33,8 @@ export function SetupForm({ boards }: Props) {
 
     const { settings, updateSettings } = useSetupSettings();
     const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
-    const maxRounds = Math.min(boards[selectedIndex].pin_count, 250);   // max number of pins in a single request is 250
+    const { excluded } = useExcludedPins(boards[selectedIndex].id);
+    const maxRounds = Math.min(boards[selectedIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
     const presetValues = timeOptions.map(o => o.value);
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
@@ -71,6 +74,7 @@ export function SetupForm({ boards }: Props) {
             <BoardCarousel
                 boards={boards}
                 selectedIndex={selectedIndex}
+                maxRounds={maxRounds}
                 onSelect={(i) => {
                     const newMax = Math.min(boards[i].pin_count, 250);
                     updateSettings({
@@ -92,14 +96,14 @@ export function SetupForm({ boards }: Props) {
                 <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[3vh] py-[3vh] xl:p-[1.5vw] xl:text-[1vw]">
                     <div>
                         <p>Number of practice rounds:</p>
-                        <div className="flex items-center gap-[0.5vh] xl:gap-[0.5vw] mt-[1.5vh] xl:mt-[1vw]">
-                            <button
-                                onClick={() => updateSettings({ numberOfRounds: Math.max(1, numberOfRounds - 1) })}
-                                disabled={numberOfRounds <= 1}
+                        <div className="flex items-center gap-[0.5vh] xl:gap-[0.5vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                            <Button
                                 className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
+                                onClick={() => updateSettings({numberOfRounds: Math.max(1, numberOfRounds - 1)})}
+                                disabled={numberOfRounds <= 1}
                             >
-                                −
-                            </button>
+                                -
+                            </Button>
                             <input type="number"
                                    step="1"
                                    onKeyDown={(e) => {
@@ -107,31 +111,31 @@ export function SetupForm({ boards }: Props) {
                                    }}
                                    value={numberOfRounds < maxRounds ? numberOfRounds : maxRounds}
                                    min="1" max="250"
-                                   onChange={(e) => updateSettings({ numberOfRounds: Math.min(Math.floor(Number(e.target.value)) || 1, maxRounds) })}
+                                   onChange={(e) => updateSettings({numberOfRounds: Math.min(Math.floor(Number(e.target.value)) || 1, maxRounds)})}
                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
-                            <button
-                                onClick={() => updateSettings({ numberOfRounds: Math.min(numberOfRounds + 1, maxRounds) })}
+                            <Button
+                                onClick={() => updateSettings({numberOfRounds: Math.min(numberOfRounds + 1, maxRounds)})}
                                 disabled={numberOfRounds >= maxRounds}
                                 className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
                             >
                                 +
-                            </button>
-                            <button
-                                onClick={() => updateSettings({ numberOfRounds: maxRounds })}
+                            </Button>
+                            <Button
+                                onClick={() => updateSettings({numberOfRounds: maxRounds})}
                                 className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] text-[2vh] xl:text-[1vw] ml-[2vh] xl:ml-[1vw]"
                             >
-                                Max ({boards[selectedIndex].pin_count})
-                            </button>
+                                Max ({maxRounds})
+                            </Button>
                         </div>
                     </div>
                     <div>
                         <p>Display each image for:</p>
                         <div
-                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[1vw] text-[2vh] xl:text-[1vw]">
+                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw] text-[2vh] xl:text-[1vw]">
                             {timeOptions.map(({label, value}) => (
-                                <button
+                                <Button
                                     key={value}
                                     onClick={() => {
                                         setCustomMode(false);
@@ -140,12 +144,11 @@ export function SetupForm({ boards }: Props) {
                                     className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
                                 >
                                     {label}
-                                </button>
+                                </Button>
                             ))}
                         </div>
-                        <div className="flex gap-[1.5vh] xl:gap-[1vw] mt-[1vh] xl:mt-[1vw]">
-                            {/* Custom button alongside time options */}
-                            <button
+                        <div className="flex gap-[1.5vh] xl:gap-[1vw] mt-[1vh] xl:mt-[0.75vw]">
+                            <Button
                                 onClick={() => {
                                     setCustomMode(true);
                                     updateSettings({timePerImage: customTimeValue});
@@ -153,17 +156,13 @@ export function SetupForm({ boards }: Props) {
                                 className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${isCustomTime ? "setting-button-active" : ""}`}
                             >
                                 Custom
-                            </button>
-                            {/* Revealed input */}
+                            </Button>
                             {isCustomTime && (
                                 <motion.div
                                     className="flex items-end gap-[1vh] xl:gap-[0.5vw]"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{
-                                        duration: 0.1,
-                                        ease: "easeIn"
-                                    }}
+                                    initial={{opacity: 0}}
+                                    animate={{opacity: 1}}
+                                    transition={{duration: 0.1, ease: "easeIn"}}
                                 >
                                     <input
                                         type="number"
@@ -180,7 +179,7 @@ export function SetupForm({ boards }: Props) {
                                         }}
                                         placeholder="1200"
                                         className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-[8vh] xl:w-[5vw] h-10 xl:h-[2vw] text-center
-                                            [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                     <span className="text-custom-gray">seconds</span>
                                 </motion.div>
@@ -189,29 +188,26 @@ export function SetupForm({ boards }: Props) {
                     </div>
                     <div>
                         <p>Warn about time at:</p>
-                        <div
-                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[1vw] text-[2vh] xl:text-[1vw]">
+                        <div className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw] text-[2vh] xl:text-[1vw]">
                             {warningOptions.map(({label, value}) => {
                                 const isSelected = warningIntervals.includes(value);
                                 return (
-                                    <button
+                                    <Button
                                         key={value}
                                         onClick={() => updateSettings({
                                             warningIntervals: warningIntervals.includes(value)
                                                 ? warningIntervals.filter(w => w !== value)
                                                 : [...warningIntervals, value]
                                         })}
-                                        disabled={timePerImage === null || value >= timePerImage}    // only enable button if smaller than selected round time
+                                        disabled={timePerImage === null || value >= timePerImage}
                                         className={`setting-button h-10 xl:h-[2vw] px-4 xl:px-[1vw] flex items-center gap-2 xl:gap-[0.5vw]
-                                            ${isSelected ? "setting-button-active" : ""}`}
+                                        ${isSelected ? "setting-button-active" : ""}`}
                                     >
-                                        <div
-                                            className={`w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center`}>
-                                            {isSelected &&
-                                                <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
+                                        <div className="w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center">
+                                            {isSelected && <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
                                         </div>
                                         {label}
-                                    </button>
+                                    </Button>
                                 );
                             })}
                         </div>
@@ -219,7 +215,6 @@ export function SetupForm({ boards }: Props) {
                     <Link href={practiceUrl} className="button w-full">
                         Start timed practice
                     </Link>
-
                     {/* shadow box */}
                     <div className="absolute inset-0 translate-y-4 border-3 rounded-xl bg-black z-[-10]"></div>
                     {/* main box */}

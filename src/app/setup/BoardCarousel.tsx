@@ -1,6 +1,7 @@
 "use client";
 
-import {useSetupSettings} from "@/app/hooks/useSetupSettings";
+import Button from "@/app/components/Button";
+import React from "react";
 
 export type Board = {
     id: string;
@@ -15,10 +16,11 @@ export type Board = {
 type Props = {
     boards: Board[];
     selectedIndex: number;
+    maxRounds: number;
     onSelect: (index: number) => void;
 }
 
-export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props) {
+export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSelect }: Props) {
     const getIndex = (offset: number) => (selectedIndex + offset + boards.length) % boards.length;
 
     const visibleBoards = [
@@ -26,6 +28,8 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
         { board: boards[getIndex(0)],  offset: 0  },
         { board: boards[getIndex(1)],  offset: 1  },
     ];
+
+    // console.log(boards[0])
 
     return (
         <>
@@ -36,10 +40,10 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                         onClick={() => {
                             onSelect(getIndex(offset))
                         }}
-                        className={`cursor-pointer ${offset === 0 ? "opacity-100" : "opacity-40"}`}
-                        data-clickable="true"
+                        className={`${offset === 0 ? "opacity-100" : "opacity-40"}`}
+                        data-clickable={`${offset === 0 ? "false" : "true"}`}
                     >
-                        <div className="w-[21vh] xl:w-full flex gap-[2px]">
+                        <div className="w-full flex justify-center gap-[2px]">
                             <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
                                  className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl
                                     ${offset === 0 ? "xl:w-[13vw] xl:h-[13vw]" : "xl:w-[11vw] xl:h-[11vw]"}`}/>
@@ -52,9 +56,31 @@ export default function BoardCarousel({ boards, selectedIndex, onSelect }: Props
                                         ${offset === 0 ? "xl:w-[6.5vw] xl:h-[6.5vw]" : "xl:w-[5.5vw] xl:h-[5.5vw]"}`}/>
                             </div>
                         </div>
-                        <div className="mt-[0.5vw] font-neue-haas flex flex-col items-center">
-                            <p className={`font-bold text-[1.5vh] xl:text-[1.25vw]`}>{board.name}</p>
-                            <p className={`font-medium text-[1.25vh] xl:text-[1vw]`}>{board.pin_count} Pins</p>
+                        <div className="flex mt-[1vh] xl:mt-[0.6vw] xl:pl-[0.5vw]">
+                            <div className="flex flex-col">
+                                <div className="flex gap-[1.5vh] xl:gap-[1vw]">
+                                    <p className={`font-bold text-[2.3vh] xl:text-[1.5vw] leading-snug`}>{board.name}</p>
+                                    {offset === 0 &&
+                                        <a
+                                            href={`/filter?boardId=${boards[selectedIndex].id}&name=${boards[selectedIndex].name}`}
+                                            className="w-[2.3vh] xl:w-[1.5vw] h-[2.3vh] xl:h-[1.5vw] pt-[0.4vh] xl:pt-[0.3vw]"
+                                        >
+                                            <svg viewBox="0 0 30 30" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" clipRule="evenodd"
+                                                      d="M0 30H30V27.0161H0V30ZM14.763 21.0483H9V14.9254L23.7585 0L30 6.17365L14.763 21.0483Z"
+                                                      fill="black"/>
+                                            </svg>
+                                        </a>
+                                    }
+                                </div>
+                                <p className={`font-medium text-[1.4vh] xl:text-[0.85vw] text-gray-dark`}>
+                                    {offset === 0 && board.pin_count !== maxRounds
+                                        ? `${maxRounds}/${board.pin_count} Pins selected`
+                                        : `${board.pin_count} Pins`
+                                    }
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ))}

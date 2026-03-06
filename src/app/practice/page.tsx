@@ -77,6 +77,7 @@ export default async function PracticePage({
                         rounds={Number(rounds)}
                         timePerImage={parsedTime}
                         warnIntervals={parsedIntervals}
+                        boardId={index as string}
                     />
                 </section>
             </main>

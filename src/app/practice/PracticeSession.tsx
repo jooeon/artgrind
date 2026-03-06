@@ -2,6 +2,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
+import {formatTime} from "@/app/Utils";
 
 type Pin = {
     id: string;
@@ -19,8 +20,9 @@ type Pin = {
 type Props = {
     pins: Pin[];
     rounds: number;
-    timePerImage: number | null; // in seconds
+    timePerImage: number | null;
     warnIntervals: number[];
+    boardId: string;
 };
 
 function getRandomOrder(pins: Pin[], rounds: number): Pin[] {
@@ -28,16 +30,15 @@ function getRandomOrder(pins: Pin[], rounds: number): Pin[] {
     return shuffled.slice(0, rounds);
 }
 
-// format time in seconds to mm:ss
-function formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-}
-
-export default function PracticeSession({ pins, rounds, timePerImage, warnIntervals }: Props) {
+export default function PracticeSession({ pins, rounds, timePerImage, warnIntervals, boardId }: Props) {
     // NOTE: if timePerImage is null, that means time is unlimited
-    const [queue] = useState<Pin[]>(() => getRandomOrder(pins, rounds));
+    const [queue] = useState<Pin[]>(() => {
+        const excludedMap = JSON.parse(localStorage.getItem("artgrind_excluded_pins") ?? "{}");
+        const excluded: string[] = excludedMap[boardId] ?? [];
+        const availablePins = pins.filter(p => !excluded.includes(p.id));
+        return getRandomOrder(availablePins, rounds);
+    });
+    // const [queue] = useState<Pin[]>(() => getRandomOrder(pins, rounds));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState<number>(timePerImage ?? 0);
     const [isPaused, setIsPaused] = useState(false);
@@ -92,7 +93,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     }, [timeLeft, currentIndex, isPaused, timePerImage]);
 
     const currentPin = queue[currentIndex];
-    // console.log(queue);
+    // console.log("queue:", queue.map(p => p.id));
 
     return (
         <div className="min-h-[100vh] relative flex justify-center">

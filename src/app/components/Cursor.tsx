@@ -22,7 +22,7 @@ export default function Cursor() {
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (target.closest("a, button, .button, [data-clickable]")) {
+            if (target.closest(`a, button, .button, [data-clickable="true"]`)) {
                 setCursorState("hover");
             }
         };
@@ -30,7 +30,7 @@ export default function Cursor() {
         const handleMouseDown = () => setCursorState("click");
         const handleMouseUp = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (target.closest("a, button, .button, [data-clickable]")) {
+            if (target.closest(`a, button, .button, [data-clickable="true"]`)) {
                 setCursorState("hover");
             } else {
                 setCursorState("default");
@@ -39,7 +39,7 @@ export default function Cursor() {
 
         const handleMouseOut = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (target.closest("a, button, .button, [data-clickable]")) {
+            if (target.closest(`a, button, .button, [data-clickable="true"]`)) {
                 setCursorState("default");
             }
         };
@@ -71,6 +71,13 @@ export default function Cursor() {
             <motion.div
                 className="fixed top-0 left-0 pointer-events-none z-[999] mix-blend-difference"
                 style={{ x: position.x, y: position.y }}
+                animate={cursorState}
+                variants={{
+                    default: { scale: 1 },
+                    hover: { scale: 1.2 },
+                    click: { scale: 0.8 },
+                }}
+                transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
             >
                 {cursorState === "default" && (
                     <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
