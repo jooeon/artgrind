@@ -99,7 +99,7 @@ export function SetupForm({ boards }: Props) {
                 }}
             />
             <motion.section
-                className="flex flex-1 justify-center items-center w-full"
+                className="flex justify-center items-center mb-[2vh] xl:mb-[2vw] mx-[2.5vh] xl:mx-[2vw]"
                 initial={{opacity: 0, y: 40}}
                 animate={{opacity: 1, y: 0}}
                 transition={{

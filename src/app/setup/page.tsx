@@ -77,10 +77,12 @@ export default async function Setup() {
     return (
         <>
             {boardAvailable ?
-                <main className="flex flex-col min-h-[100vh] justify-between gap-[2vh] xl:gap-[2.5vw] px-[2.5vh] xl:px-[2vw] pt-[5vh] xl:pt-[4vw]">
-                    <ProfilePanel username={username} />
-                    <SetupForm boards={data}/>
-                    <Footer />
+                <main className="flex flex-col min-h-[100vh]">
+                    <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw] pt-[5vh] xl:pt-[4vw]">
+                        <ProfilePanel username={username} />
+                        <SetupForm boards={data}/>
+                        <Footer />
+                    </div>
                 </main>
             :
                 <div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100vh] p-[2vh]">

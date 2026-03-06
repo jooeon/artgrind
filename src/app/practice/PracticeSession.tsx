@@ -104,7 +104,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                     {currentIndex+1}/{rounds}
                 </p>
             </div>
-            <div className="flex gap-[1vh] xl:gap-[2vw] absolute bottom-0 xl:top-0 left-0 pl-[0.75vw] text-white uppercase font-bold text-[3.5vh] xl:text-[3vw]">
+            <div className="flex gap-[2vh] xl:gap-[2vw] absolute bottom-0 xl:top-0 left-0 pl-[0.75vw] text-white uppercase font-bold text-[3.5vh] xl:text-[3vw]">
                 <p className={`${isPaused ? 'text-gray-light' : ''}`}>
                     {timePerImage !== null ? formatTime(timeLeft) : 'Unlimited'}
                 </p>

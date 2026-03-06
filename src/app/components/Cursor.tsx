@@ -69,7 +69,7 @@ export default function Cursor() {
         <div className="hidden xl:block">
             <style>{`* { cursor: none !important; }`}</style>
             <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[999] mix-blend-difference"
+                className="fixed top-0 left-0 pointer-events-none w-0 xl:w-[2vw] h-0 xl:h-[2vw] z-[999] mix-blend-difference"
                 style={{ x: position.x, y: position.y }}
                 animate={cursorState}
                 variants={{
@@ -80,7 +80,7 @@ export default function Cursor() {
                 transition={{ duration: 0.2, ease: [0.76, 0, 0.24, 1] }}
             >
                 {cursorState === "default" && (
-                    <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="100%" height="100%" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clipPath="url(#clip0_136_221)">
                             <path
                                 d="M0 0.37L0.24 12.17C0.24 12.62 0.43 13.04 0.74 13.36L23.33 35.95C24 36.62 25.1 36.62 25.77 35.95L35.94 25.78C36.61 25.11 36.61 24.01 35.94 23.34L13.35 0.74C13.03 0.42 12.61 0.24 12.16 0.24L0.37 0C0.16 0 0 0.16 0 0.37Z"
@@ -96,7 +96,7 @@ export default function Cursor() {
                 )}
 
                 {(cursorState === "hover" || cursorState === "click") && (
-                    <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="100%" height="100%" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clipPath="url(#clip0_136_213)">
                             <path
                                 d="M24.55 35.84C24.39 35.84 24.23 35.78 24.12 35.66L1.41001 12.96C1.14001 12.69 0.99001 12.33 0.98001 11.95L0.76001 0.76001L11.95 0.98001C12.33 0.98001 12.69 1.14001 12.96 1.41001L35.66 24.12C35.9 24.36 35.9 24.75 35.66 24.99L24.98 35.67C24.86 35.79 24.71 35.85 24.55 35.85V35.84Z"
