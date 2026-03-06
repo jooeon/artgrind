@@ -89,7 +89,7 @@ export default async function Setup() {
                     <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">
                         I created a board
                     </Link>
-                    <CharacterAnimation />
+                    {/*<CharacterAnimation />*/}
                 </div>
             }
         </>

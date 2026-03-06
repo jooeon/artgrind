@@ -116,3 +116,28 @@ button:disabled {
     background-color: var(--color-black);
     opacity: 0.8;
 }
+
+/* Links styling  */
+
+a.text-link {
+    position: relative;
+    display: inline-block;
+}
+
+a.text-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    bottom: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+    will-change: transform; /* Optional performance optimization */
+}
+
+a.text-link:hover::after {
+    transform-origin: left;
+    transform: scaleX(1); /* Expands underline from left to right */
+}
