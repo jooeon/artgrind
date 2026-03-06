@@ -67,7 +67,7 @@ export default async function Setup() {
         boardAvailable = true;
     }
 
-    console.log(data)
+    // console.log(data)
 
     const user = await getUser();
     // console.log(user);
