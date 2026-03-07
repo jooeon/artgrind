@@ -41,7 +41,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     // const [queue] = useState<Pin[]>(() => getRandomOrder(pins, rounds));
     const [currentIndex, setCurrentIndex] = useState(0);
     const [timeLeft, setTimeLeft] = useState<number>(timePerImage ?? 0);
-    const [isPaused, setIsPaused] = useState(false);
+    const [isPaused, setIsPaused] = useState(true);
     const [isSessionOver, setIsSessionOver] = useState(false);
     const currentPin = queue[currentIndex];
     const [stopClicked, setStopClicked] = useState(false);
@@ -58,6 +58,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         audioContextRef.current = new AudioContext();
         audioContextRef.current.resume();
         setStarted(true);
+        setIsPaused(false);
     };
 
     // Control UI hide after certain time
@@ -85,31 +86,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         const mobile = window.matchMedia("(hover: none)").matches;
         setIsMobileDevice(mobile);
         if (!mobile) {
-            audioContextRef.current = new AudioContext();
-            audioContextRef.current.resume();
-            setStarted(true);
-        }
-    }, []);
-
-    // unlock AudioContext on first touch (for mobile only)
-    useEffect(() => {
-        if (isMobileDevice) {
-            setIsPaused(true);
-            audioContextRef.current = new AudioContext();
-
-            const resume = () => {
-                if (audioContextRef.current?.state === "suspended") {
-                    audioContextRef.current.resume();
-                }
-            };
-
-            window.addEventListener("touchstart", resume);
-            window.addEventListener("click", resume);
-
-            return () => {
-                window.removeEventListener("touchstart", resume);
-                window.removeEventListener("click", resume);
-            };
+            handleStart();
         }
     }, []);
 
