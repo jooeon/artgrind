@@ -54,7 +54,6 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     const audioBufferRef = useRef<AudioBuffer | null>(null);
 
     const handleStart = () => {
-        // initialize AudioContext here — guaranteed user gesture
         audioContextRef.current = new AudioContext();
         audioContextRef.current.resume();
         setStarted(true);
@@ -92,7 +91,10 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
 
     const playChime = async () => {
         try {
-            if (!audioContextRef.current) return;
+            if (!audioContextRef.current) {
+                console.log("no audio context");
+                return;
+            }
 
             if (!audioBufferRef.current) {
                 const response = await fetch("/audio/chime.mp3");
@@ -104,7 +106,9 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
             source.buffer = audioBufferRef.current;
             source.connect(audioContextRef.current.destination);
             source.start(0);
-        } catch (e) {}
+        } catch (e) {
+            console.log("playChime error:", e);
+        }
     };
 
     // play chime at intervals and tick down timer
