@@ -43,9 +43,22 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     const [timeLeft, setTimeLeft] = useState<number>(timePerImage ?? 0);
     const [isPaused, setIsPaused] = useState(false);
     const [isSessionOver, setIsSessionOver] = useState(false);
+    const currentPin = queue[currentIndex];
     const [stopClicked, setStopClicked] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(true);
     const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
+    const [started, setStarted] = useState(false);
+    // Audio locked on iOS until first user interaction, bypass this by adding a touch event that unlocks it
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const audioBufferRef = useRef<AudioBuffer | null>(null);
+
+    const handleStart = () => {
+        // initialize AudioContext here — guaranteed user gesture
+        audioContextRef.current = new AudioContext();
+        audioContextRef.current.resume();
+        setStarted(true);
+    };
 
     // Control UI hide after certain time
     const resetHideTimer = () => {
@@ -54,6 +67,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         hideTimer.current = setTimeout(() => setControlsVisible(false), 3000);
     };
 
+    // reveal control UI when clicking on screen
     useEffect(() => {
         resetHideTimer();
         // window.addEventListener("mousemove", resetHideTimer);
@@ -66,27 +80,37 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         };
     }, []);
 
-    // Audio locked on iOS until first user interaction, bypass this by adding a touch event that unlocks it
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const audioBufferRef = useRef<AudioBuffer | null>(null);
-
-    // unlock AudioContext on first touch
+    // setStarted(true) on desktop, only have "tap to begin" happen on mobile
     useEffect(() => {
-        audioContextRef.current = new AudioContext();
+        const mobile = window.matchMedia("(hover: none)").matches;
+        setIsMobileDevice(mobile);
+        if (!mobile) {
+            audioContextRef.current = new AudioContext();
+            audioContextRef.current.resume();
+            setStarted(true);
+        }
+    }, []);
 
-        const resume = () => {
-            if (audioContextRef.current?.state === "suspended") {
-                audioContextRef.current.resume();
-            }
-        };
+    // unlock AudioContext on first touch (for mobile only)
+    useEffect(() => {
+        if (isMobileDevice) {
+            setIsPaused(true);
+            audioContextRef.current = new AudioContext();
 
-        window.addEventListener("touchstart", resume);
-        window.addEventListener("click", resume);
+            const resume = () => {
+                if (audioContextRef.current?.state === "suspended") {
+                    audioContextRef.current.resume();
+                }
+            };
 
-        return () => {
-            window.removeEventListener("touchstart", resume);
-            window.removeEventListener("click", resume);
-        };
+            window.addEventListener("touchstart", resume);
+            window.addEventListener("click", resume);
+
+            return () => {
+                window.removeEventListener("touchstart", resume);
+                window.removeEventListener("click", resume);
+            };
+        }
     }, []);
 
     const playChime = async () => {
@@ -106,6 +130,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         } catch (e) {}
     };
 
+    // play chime at intervals and tick down timer
     useEffect(() => {
         if (isPaused || timePerImage === null) return;
 
@@ -130,8 +155,19 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         return () => clearInterval(timer);
     }, [timeLeft, currentIndex, isPaused, timePerImage]);
 
-    const currentPin = queue[currentIndex];
-    // console.log("queue:", queue.map(p => p.id));
+    if (isMobileDevice === null) return null;
+
+    // "tap to begin" overlay for mobile (on desktop started is set to true above)
+    if (!started) {
+        return (
+            <div
+                className="w-full h-[100dvh] flex items-center justify-center bg-black"
+                onClick={handleStart}
+            >
+                <p className="text-white font-fornire lowercase text-[5vh] xl:text-[5vw] leading-none">Tap to begin!</p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-dvh xl:min-h-[100dvh] relative flex flex-col items-center">
