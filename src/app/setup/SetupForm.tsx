@@ -192,6 +192,7 @@ export function SetupForm({ boards }: Props) {
                                 onClick={() => {
                                     setCustomMode(true);
                                     updateSettings({timePerImage: customTimeValue});
+                                    handleTimeSelection(customTimeValue);
                                 }}
                                 className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${isCustomTime ? "setting-button-active" : ""}`}
                             >
@@ -218,6 +219,7 @@ export function SetupForm({ boards }: Props) {
                                             const val = Math.floor(Number(e.target.value));
                                             if (val >= 1) {
                                                 const clamped = Math.min(val, 3600);
+                                                handleTimeSelection(clamped);
                                                 setCustomTimeValue(clamped);
                                                 updateSettings({ timePerImage: clamped });
                                             }
