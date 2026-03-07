@@ -46,11 +46,15 @@ export default async function Home() {
                                     <span>Sync to Pinterest</span>
                                     <span className="text:[1vh] xl:text-[0.75vw] font-normal xl:font-medium">(requires Pinterest account)</span>
                                 </a>
+                                <p className="text-[1vh] xl:text-[0.9vw] text-gray-light text-center mt-[1vh] xl:mt-[0.75vw]">
+                                    *You'll be redirected to Pinterest to authorize access to your boards.<br/>
+                                    ArtGrind only reads board data and never posts on your behalf.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </section>
-                <CharacterAnimation />
+                <CharacterAnimation/>
             </div>
             <Footer/>
         </main>

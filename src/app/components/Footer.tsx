@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
 
     return (
@@ -7,7 +9,7 @@ export default function Footer() {
                 <span className="hidden xl:inline">&copy;{new Date().getFullYear()}</span>
             </p>
             <p className="text-[0.8vh] xl:text-[0.75vw] text-gray-light text-center">For personal use only. Pinterest
-                    terms and content policies apply.</p>
+                    terms and content policies apply. <Link href="/privacy-policy" className="underline">Privacy Policy</Link></p>
         </footer>
 );
 
