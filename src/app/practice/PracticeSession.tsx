@@ -142,10 +142,11 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     if (!started) {
         return (
             <div
-                className="w-full h-[100dvh] flex items-center justify-center bg-black"
+                className="w-full h-[100dvh] flex flex-col gap-[3vh] xl:gap-[3vw] items-center justify-center bg-black"
                 onClick={handleStart}
             >
-                <p className="text-white font-fornire lowercase text-[5vh] xl:text-[5vw] leading-none">Tap to begin!</p>
+                <p className="text-white font-fornire lowercase text-[6vh] xl:text-[6vw] leading-none">Tap to begin!</p>
+                <p className="text-white font-medium text-[1.4vh] xl:text-[1.4vw]">Turn silent mode off to hear chimes</p>
             </div>
         );
     }

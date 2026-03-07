@@ -238,7 +238,7 @@ export function SetupForm({ boards }: Props) {
                         </div>
                     </div>
                     <div>
-                        <p>Warn about time at:</p>
+                        <p>Play a chime at:</p>
                         <div className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw] text-[2vh] xl:text-[1vw]">
                             {warningOptions.map(({label, value}) => {
                                 const isSelected = warningIntervals.includes(value);
