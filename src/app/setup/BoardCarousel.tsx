@@ -1,7 +1,7 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import React from "react";
+import { motion } from "motion/react";
+import React, {useEffect, useRef} from "react";
 
 export type Board = {
     id: string;
@@ -17,27 +17,42 @@ type Props = {
     boards: Board[];
     selectedIndex: number;
     maxRounds: number;
+    isPreset: boolean;
     onSelect: (index: number) => void;
 }
 
-export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSelect }: Props) {
+    export default function BoardCarousel({ boards, selectedIndex, maxRounds, isPreset, onSelect }: Props) {
     const getIndex = (offset: number) => (selectedIndex + offset + boards.length) % boards.length;
-
     const offsets = boards.length === 1 ? [0] : boards.length === 2 ? [-1, 0] : [-1, 0, 1];
-
     const visibleBoards = offsets.map(offset => ({ board: boards[getIndex(offset)], offset }));
+    const mounted = useRef(false);
+
+    // For calculating "mounting" time based on time of initial animation completion
+    useEffect(() => {
+        setTimeout(() => {
+            mounted.current = true;
+        }, 1000);
+        return () => clearTimeout(1000);
+    }, []);
 
     return (
         <>
-            <section className="flex flex-col xl:flex-row justify-center items-center gap-[3vh] xl:gap-[10vw]">
+            <motion.section className="flex flex-col xl:flex-row justify-center items-center gap-[3vh] xl:gap-[10vw]">
                 {visibleBoards.map(({ board, offset }) => (
-                    <div
+                    <motion.div
                         key={board.id}
                         onClick={() => {
                             onSelect(getIndex(offset))
                         }}
                         className={`${offset === 0 ? "opacity-100" : "opacity-40"}`}
                         data-clickable={`${offset === 0 ? "false" : "true"}`}
+                        initial={{opacity: 0, y: 30}}
+                        animate={{opacity: offset === 0 ? 1 : 0.4, y: 0}}
+                        transition={{
+                            delay: mounted.current ? 0 : offset === 0 ? 0.2 : offset === -1 ? 0.1 : 0.3,
+                            duration: mounted.current ? 0 : 0.4,
+                            ease: [0.76, 0, 0.24, 1],
+                        }}
                     >
                         <div className="w-full flex justify-center gap-[2px]">
                             {board.media.image_cover_url ?
@@ -45,8 +60,9 @@ export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSele
                                      className={`w-[12vh] h-[12vh] object-cover rounded-l-2xl ${!board.media.pin_thumbnail_urls[1] ? "rounded-r-2xl" : ""}
                                         ${offset === 0 ? "xl:w-[13vw] xl:h-[13vw]" : "xl:w-[11vw] xl:h-[11vw]"}`}/>
                                 :
-                                <div>
-                                    Add pins to your board first!
+                                <div className="flex justify-center items-center text-center w-[12vh] h-[12vh] xl:w-[13vw] xl:h-[13vw]
+                                    font-semibold text-[1.75vw] bg-gray-200 text-white rounded-2xl p-[2vh] xl:p-[2vw]">
+                                    Add pins to this board first!
                                 </div>
                             }
                             {board.media.pin_thumbnail_urls[1] &&
@@ -64,9 +80,9 @@ export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSele
                             <div className="flex flex-col">
                                 <div className="flex gap-[1.5vh] xl:gap-[1vw]">
                                     <p className={`font-bold text-[2.3vh] xl:text-[1.5vw] leading-snug`}>{board.name}</p>
-                                    {offset === 0 &&
+                                    {(offset === 0 && board.pin_count !== 0) &&
                                         <a
-                                            href={`/filter?boardId=${boards[selectedIndex].id}&name=${boards[selectedIndex].name}`}
+                                            href={`/filter?boardId=${boards[selectedIndex].id}&name=${boards[selectedIndex].name}&isPreset=${isPreset}`}
                                             className="w-[2.3vh] xl:w-[1.5vw] h-[2.3vh] xl:h-[1.5vw] pt-[0.4vh] xl:pt-[0.3vw]"
                                         >
                                             <svg viewBox="0 0 30 30" fill="none"
@@ -86,9 +102,9 @@ export default function BoardCarousel({ boards, selectedIndex, maxRounds, onSele
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
-            </section>
+            </motion.section>
         </>
     );
 }

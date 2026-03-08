@@ -3,7 +3,7 @@
 import {useRouter} from "next/navigation";
 import {useExcludedPins} from "@/app/hooks/useExcludedPins";
 import Button from "@/app/components/Button";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { motion } from "motion/react";
 
 type Pin = {

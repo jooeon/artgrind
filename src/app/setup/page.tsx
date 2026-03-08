@@ -4,8 +4,8 @@ import {SetupForm} from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
-import CharacterAnimation from "@/app/components/CharacterAnimation";
 import Link from "next/link";
+import {Board} from "@/app/setup/BoardCarousel";
 
 export const runtime = "edge";
 
@@ -30,6 +30,24 @@ async function getBoards() {
     });
 
     return sorted;
+}
+
+async function getPresetBoards(): Promise<Board[]> {
+    const token = process.env.PINTEREST_PRESET_TOKEN;
+    const boardIds = process.env.PINTEREST_PRESET_BOARD_IDS?.split(",") ?? [];
+
+    if (!token || boardIds.length === 0) return [];
+
+    const boards = await Promise.all(
+        boardIds.map(async (id) => {
+            const res = await fetch(`https://api.pinterest.com/v5/boards/${id.trim()}`, {
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+            return res.json();
+        })
+    );
+
+    return boards.filter(b => b.id); // filter out any failed fetches
 }
 
 async function getUser() {
@@ -69,6 +87,8 @@ export default async function Setup() {
 
     // console.log(data)
 
+    const presetBoards = await getPresetBoards();
+
     const user = await getUser();
     // console.log(user);
 
@@ -80,7 +100,7 @@ export default async function Setup() {
                 <main className="flex flex-col min-h-[100dvh]">
                     <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw] pt-[5vh] xl:pt-[4vw]">
                         <ProfilePanel username={username} />
-                        <SetupForm boards={data}/>
+                        <SetupForm boards={data} presetBoards={presetBoards}/>
                         <Footer />
                     </div>
                 </main>

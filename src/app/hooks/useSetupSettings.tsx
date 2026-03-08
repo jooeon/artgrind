@@ -5,6 +5,7 @@ type Settings = {
     numberOfRounds: number;
     timePerImage: number | null;
     warningIntervals: number[];
+    isPreset: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +13,7 @@ const DEFAULT_SETTINGS: Settings = {
     numberOfRounds: 5,
     timePerImage: 60,
     warningIntervals: [],
+    isPreset: false,
 };
 
 const STORAGE_KEY = "artgrind_settings";

@@ -10,9 +10,10 @@ import Button from "../components/Button";
 
 type Props = {
     boards: Board[];
+    presetBoards: Board[];
 }
 
-export function SetupForm({ boards }: Props) {
+export function SetupForm({ boards, presetBoards }: Props) {
     const timeOptions = [
         { label: "30s", value: 30 },
         { label: "60s", value: 60 },
@@ -32,16 +33,22 @@ export function SetupForm({ boards }: Props) {
     ]
 
     const { settings, updateSettings } = useSetupSettings();
-    const { selectedIndex, numberOfRounds, timePerImage, warningIntervals } = settings;
-    const safeIndex = Math.min(selectedIndex, boards.length - 1);
-    const { excluded } = useExcludedPins(boards[safeIndex].id);
-    const maxRounds = Math.min(boards[safeIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
-    const presetValues = timeOptions.map(o => o.value);
+    const { selectedIndex, numberOfRounds, timePerImage, warningIntervals, isPreset } = settings;
+    const [showPresets, setShowPresets] = useState(false);   // Toggle show preset boards
+    const activeBoards = showPresets ? presetBoards : boards; // can be preset boards or user's boards
+    const safeIndex = Math.min(selectedIndex, activeBoards.length - 1);
+    const { excluded } = useExcludedPins(activeBoards[safeIndex].id);
+    const maxRounds = Math.min(activeBoards[safeIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
+    const presetValues = timeOptions.map(o => o.value); // preset time values (30s, 60s, etc)
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
     const isCustomTime = customMode || !presetValues.includes(timePerImage);
     const [roundsInput, setRoundsInput] = useState(String(numberOfRounds));
     const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
+
+    useEffect(() => {
+        setShowPresets(isPreset ?? false);
+    }, [isPreset]);
 
     // sync when numberOfRounds changes externally (e.g. switching boards)
     useEffect(() => {
@@ -54,7 +61,7 @@ export function SetupForm({ boards }: Props) {
 
     // Safeguard for when saved selectedIndex in localStorage is larger than the number of boards returned
     useEffect(() => {
-        if (selectedIndex >= boards.length) {
+        if (selectedIndex >= activeBoards.length) {
             updateSettings({ selectedIndex: 0 });
         }
     }, []);
@@ -88,21 +95,25 @@ export function SetupForm({ boards }: Props) {
     const practiceUrl = {
         pathname: '/practice',
         query: {
-            index: boards[safeIndex].id,
+            index: activeBoards[safeIndex].id,
             rounds: numberOfRounds,
             time: timePerImage === null ? "null" : timePerImage,
             intervals: warningIntervals,
+            isPreset: showPresets,
         },
     };
+
+    console.log(isPreset);
 
     return (
         <>
             <BoardCarousel
-                boards={boards}
+                boards={activeBoards}
                 selectedIndex={safeIndex}
                 maxRounds={maxRounds}
+                isPreset={showPresets}
                 onSelect={(i) => {
-                    const newMax = Math.min(boards[i].pin_count, 250);
+                    const newMax = Math.min(activeBoards[i].pin_count, 250);
                     updateSettings({
                         selectedIndex: i,
                         numberOfRounds: Math.min(numberOfRounds, newMax)
@@ -114,59 +125,83 @@ export function SetupForm({ boards }: Props) {
                 initial={{opacity: 0, y: 40}}
                 animate={{opacity: 1, y: 0}}
                 transition={{
-                    delay: 0.2,
+                    delay: 0.4,
                     duration: 0.4,
                     ease: [0.76, 0, 0.24, 1],
                 }}
             >
                 <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[3vh] py-[3vh] xl:p-[1.5vw] xl:text-[1vw]">
-                    <div>
-                        <p>Number of practice rounds:</p>
-                        <div className="flex items-center gap-[0.5vh] xl:gap-[0.5vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                    <div className="flex justify-between">
+                        <div>
+                            <p>Number of practice rounds:</p>
+                            <div className="flex items-center gap-[0.5vh] xl:gap-[0.5vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                                <Button
+                                    className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
+                                    onClick={() => updateSettings({numberOfRounds: Math.max(1, numberOfRounds - 1)})}
+                                    disabled={numberOfRounds <= 1}
+                                >
+                                    -
+                                </Button>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    onKeyDown={(e) => {
+                                        if (e.key === "." || e.key === "-") e.preventDefault();
+                                    }}
+                                    value={roundsInput}
+                                    min="1" max="250"
+                                    onChange={(e) => {
+                                        setRoundsInput(e.target.value);
+                                        const val = Math.floor(Number(e.target.value));
+                                        if (val >= 1) {
+                                            updateSettings({numberOfRounds: Math.min(val, maxRounds)});
+                                        }
+                                    }}
+                                    onBlur={() => {
+                                        // when user leaves the field, clamp and restore valid value
+                                        const val = Math.floor(Number(roundsInput));
+                                        const clamped = Math.min(Math.max(val || 1, 1), maxRounds);
+                                        setRoundsInput(String(clamped));
+                                        updateSettings({numberOfRounds: clamped});
+                                    }}
+                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
+                                        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <Button
+                                    onClick={() => updateSettings({numberOfRounds: Math.min(numberOfRounds + 1, maxRounds)})}
+                                    disabled={numberOfRounds >= maxRounds}
+                                    className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
+                                >
+                                    +
+                                </Button>
+                                <Button
+                                    onClick={() => updateSettings({numberOfRounds: maxRounds})}
+                                    className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] text-[2vh] xl:text-[1vw] ml-[2vh] xl:ml-[1vw]"
+                                >
+                                    Max ({maxRounds})
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-[1vw] mb-[2vw]">
                             <Button
-                                className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
-                                onClick={() => updateSettings({numberOfRounds: Math.max(1, numberOfRounds - 1)})}
-                                disabled={numberOfRounds <= 1}
+                                onClick={() => {
+                                    setShowPresets(false);
+                                    updateSettings({selectedIndex: 0});
+                                    updateSettings({isPreset: false});
+                                }}
+                                className={`setting-button px-3 h-10 xl:h-[2vw] ${!isPreset ? "setting-button-active" : ""}`}
                             >
-                                -
+                                My Boards
                             </Button>
-                            <input
-                                type="number"
-                                step="1"
-                                onKeyDown={(e) => {
-                                    if (e.key === "." || e.key === "-") e.preventDefault();
-                                }}
-                                value={roundsInput}
-                                min="1" max="250"
-                                onChange={(e) => {
-                                    setRoundsInput(e.target.value);
-                                    const val = Math.floor(Number(e.target.value));
-                                    if (val >= 1) {
-                                        updateSettings({ numberOfRounds: Math.min(val, maxRounds) });
-                                    }
-                                }}
-                                onBlur={() => {
-                                    // when user leaves the field, clamp and restore valid value
-                                    const val = Math.floor(Number(roundsInput));
-                                    const clamped = Math.min(Math.max(val || 1, 1), maxRounds);
-                                    setRoundsInput(String(clamped));
-                                    updateSettings({ numberOfRounds: clamped });
-                                }}
-                                className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
-                                    [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
                             <Button
-                                onClick={() => updateSettings({numberOfRounds: Math.min(numberOfRounds + 1, maxRounds)})}
-                                disabled={numberOfRounds >= maxRounds}
-                                className="setting-button w-10 xl:w-[2vw] h-10 xl:h-[2vw]"
+                                onClick={() => {
+                                    setShowPresets(true);
+                                    updateSettings({selectedIndex: 0});
+                                    updateSettings({isPreset: true});
+                                }}
+                                className={`setting-button px-3 h-10 xl:h-[2vw] ${isPreset ? "setting-button-active" : ""}`}
                             >
-                                +
-                            </Button>
-                            <Button
-                                onClick={() => updateSettings({numberOfRounds: maxRounds})}
-                                className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] text-[2vh] xl:text-[1vw] ml-[2vh] xl:ml-[1vw]"
-                            >
-                                Max ({maxRounds})
+                                Preset Boards
                             </Button>
                         </div>
                     </div>

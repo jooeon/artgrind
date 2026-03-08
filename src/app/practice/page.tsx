@@ -10,7 +10,7 @@ async function getListOfPins(boardId: string) {
 
     if (!token) return null;
 
-    const res = await fetch(`https://api.pinterest.com/v5/boards/${boardId}/pins?board_id=${boardId}&page_size=250`, {
+    const res = await fetch(`https://api.pinterest.com/v5/boards/${boardId}/pins?page_size=250`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -20,6 +20,18 @@ async function getListOfPins(boardId: string) {
     });
 
     // console.log(await res.json())
+    return res.json();
+}
+
+async function getPresetBoardPins(boardId: string) {
+    const token = process.env.PINTEREST_PRESET_TOKEN;
+
+    if (!token) return null;
+
+    const res = await fetch(`https://api.pinterest.com/v5/boards/${boardId}/pins?page_size=250`, {
+        headers: { "Authorization": `Bearer ${token}` },
+    });
+
     return res.json();
 }
 
@@ -51,6 +63,7 @@ export default async function PracticePage({
     const { rounds } = await searchParams;
     const { time } = await searchParams;
     const { intervals } = await searchParams;
+    const { isPreset } = await searchParams;
 
     if (!index || typeof index !== 'string') {
         throw new Error("No index provided");
@@ -64,7 +77,9 @@ export default async function PracticePage({
         ? (Array.isArray(intervals) ? intervals : [intervals]).map(Number)
         : [];
 
-    const data = await getListOfPins(index);
+    const data = isPreset
+        ? await getPresetBoardPins(index)
+        : await getListOfPins(index)
 
     if (!data) redirect("/setup");
 
