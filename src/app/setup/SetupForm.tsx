@@ -45,6 +45,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
     const isCustomTime = customMode || !presetValues.includes(timePerImage);
     const [roundsInput, setRoundsInput] = useState(String(numberOfRounds));
     const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
+    const [showBoardOptions, setShowBoardOptions] = useState(false);
 
     useEffect(() => {
         setShowPresets(isPreset ?? false);
@@ -103,7 +104,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
         },
     };
 
-    console.log(isPreset);
+    // console.log(isPreset);
 
     return (
         <>
@@ -130,7 +131,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                     ease: [0.76, 0, 0.24, 1],
                 }}
             >
-                <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[3vh] py-[3vh] xl:p-[1.5vw] xl:text-[1vw]">
+                <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[2.25vh] py-[2.75vh] xl:p-[1.5vw] text-[1.5vh] xl:text-[1vw]">
                     <div className="flex justify-between">
                         <div>
                             <p>Number of practice rounds:</p>
@@ -176,44 +177,74 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                 </Button>
                                 <Button
                                     onClick={() => updateSettings({numberOfRounds: maxRounds})}
-                                    className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] text-[2vh] xl:text-[1vw] ml-[2vh] xl:ml-[1vw]"
+                                    className="setting-button h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ml-[1vh] xl:ml-[1vw]"
                                 >
                                     Max ({maxRounds})
                                 </Button>
                             </div>
                         </div>
-                        <div className="flex items-center gap-[1vw] mb-[2vw]">
+                        <div className="flex flex-col items-end">
                             <Button
-                                onClick={() => {
-                                    setShowPresets(false);
-                                    updateSettings({selectedIndex: 0});
-                                    updateSettings({isPreset: false});
-                                }}
-                                className={`setting-button px-3 h-10 xl:h-[2vw] ${!isPreset ? "setting-button-active" : ""}`}
+                                onClick={() => setShowBoardOptions(!showBoardOptions)}
+                                className="w-fit"
                             >
-                                My Boards
+                                <div className="flex items-center xl:items-end gap-[0.75vh] xl:gap-[0.5vw]">
+                                    <p className="font-semibold">Board Options</p>
+                                    <div className="w-[1.25vh] xl:w-[1vw] h-[1.25vh] xl:h-[1vw]">
+                                        {showBoardOptions ?
+                                            <svg viewBox="0 0 20 12" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" clipRule="evenodd"
+                                                      d="M8.8215 0.48815C9.47233 -0.162717 10.5277 -0.162717 11.1785 0.48815L19.5118 8.8215C20.1627 9.47233 20.1627 10.5277 19.5118 11.1785C18.861 11.8293 17.8057 11.8293 17.1548 11.1785L10 4.02367L2.84518 11.1785C2.1943 11.8293 1.13903 11.8293 0.48815 11.1785C-0.162717 10.5277 -0.162717 9.47233 0.48815 8.8215L8.8215 0.48815Z"
+                                                      fill="#131313"/>
+                                            </svg>
+                                            :
+                                            <svg viewBox="0 0 20 12" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" clipRule="evenodd"
+                                                      d="M11.1785 11.1785C10.5277 11.8293 9.47233 11.8293 8.8215 11.1785L0.488167 2.84513C-0.162666 2.19429 -0.162666 1.13896 0.488167 0.488126C1.139 -0.162708 2.19433 -0.162708 2.84517 0.488126L10 7.64296L17.1548 0.488126C17.8057 -0.162708 18.861 -0.162708 19.5118 0.488126C20.1627 1.13896 20.1627 2.19429 19.5118 2.84513L11.1785 11.1785Z"
+                                                      fill="#131313"/>
+                                            </svg>
+                                        }
+                                    </div>
+                                </div>
                             </Button>
-                            <Button
-                                onClick={() => {
-                                    setShowPresets(true);
-                                    updateSettings({selectedIndex: 0});
-                                    updateSettings({isPreset: true});
-                                }}
-                                className={`setting-button px-3 h-10 xl:h-[2vw] ${isPreset ? "setting-button-active" : ""}`}
-                            >
-                                Preset Boards
-                            </Button>
+                            {showBoardOptions &&
+                                <div
+                                    className="absolute top-[5.5vh] xl:top-[4vw] flex flex-col items-end border-3 border-black rounded-2xl overflow-hidden">
+                                    <button
+                                        onClick={() => {
+                                            setShowPresets(false);
+                                            updateSettings({selectedIndex: 0});
+                                            updateSettings({isPreset: false});
+                                        }}
+                                        className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${!isPreset ? "setting-button-active" : ""}`}
+                                    >
+                                        My Boards
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowPresets(true);
+                                            updateSettings({selectedIndex: 0});
+                                            updateSettings({isPreset: true});
+                                        }}
+                                        className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${isPreset ? "setting-button-active" : ""}`}
+                                    >
+                                        Preset Boards
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div>
-                        <p>Display each image for:</p>
-                        <div
-                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw] text-[2vh] xl:text-[1vw]">
-                            {timeOptions.map(({label, value}) => (
-                                <Button
-                                    key={value}
-                                    onClick={() => {
-                                        setCustomMode(false);
+                    <p>Display each image for:</p>
+                    <div
+                        className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                        {timeOptions.map(({label, value}) => (
+                            <Button
+                                key={value}
+                                onClick={() => {
+                                    setCustomMode(false);
                                         handleTimeSelection(value);
                                     }}
                                     className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
@@ -235,7 +266,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                             </Button>
                             {isCustomTime && (
                                 <motion.div
-                                    className="flex items-end gap-[1vh] xl:gap-[0.5vw]"
+                                    className="flex items-center xl:items-end gap-[1vh] xl:gap-[0.5vw]"
                                     initial={{opacity: 0}}
                                     animate={{opacity: 1}}
                                     transition={{duration: 0.1, ease: "easeIn"}}
@@ -276,7 +307,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                     </div>
                     <div>
                         <p>Play a chime at:</p>
-                        <div className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw] text-[2vh] xl:text-[1vw]">
+                        <div className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
                             {warningOptions.map(({label, value}) => {
                                 const isSelected = warningIntervals.includes(value);
                                 return (

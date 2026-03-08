@@ -173,7 +173,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                 animate={{ opacity: controlsVisible ? 1 : 0 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="flex justify-center items-center gap-[4vh] xl:gap-[2vw]
-                absolute bottom-[15vh] xl:bottom-[4vw] bg-black/40 backdrop-blur-md
+                absolute bottom-[12vh] xl:bottom-[4vw] bg-black/40 backdrop-blur-md
                 px-[4vh] py-[2vh] xl:px-[2.5vw] xl:py-[1.5vw] xl:p-0 rounded-lg">
                 {/* Backward */}
                 <button

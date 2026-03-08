@@ -33,10 +33,10 @@ export default async function Home() {
                 <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[10vw] flex-1
                     w-full h-1/2 mt-[10vh] xl:mt-[8vw] xl:px-[5vw]">
                     <div className="relative flex flex-col gap-[2.5vh] xl:gap-[1.5vw] w-fit h-full font-neue-haas">
-                        <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[5vh] xl:text-[3.75vw] leading-none text-center xl:text-start">to
+                        <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">to
                             get started:</h2>
-                        <div className="flex flex-col gap-[2vh] xl:gap-[2vw] w-fit text-[1.5vh] xl:text-[1.25vw]">
-                            <ol className="flex flex-col gap-[1vh] xl:gap-[0.75vw] font-medium xl:font-semibold">
+                        <div className="flex flex-col gap-[2.5vh] xl:gap-[2vw] w-fit text-[1.75vh] xl:text-[1.25vw]">
+                            <ol className="flex flex-col gap-[1vh] xl:gap-[0.75vw] font-semibold">
                                 <li>1. Hand-pick your references on Pinterest</li>
                                 <li>2. Instantly sync and access all of your boards</li>
                                 <li>3. Customize your timer settings and start drawing</li>
@@ -44,10 +44,10 @@ export default async function Home() {
                             <div className="w-full">
                                 <a href="/api/auth/login" role="button" className="flex flex-col button m-auto w-fit">
                                     <span>Sync to Pinterest</span>
-                                    <span className="text:[1vh] xl:text-[0.75vw] font-normal xl:font-medium">(requires Pinterest account)</span>
+                                    <span className="text:[1vh] xl:text-[0.75vw] font-normal xl:font-medium">(requires account)</span>
                                 </a>
                                 <p className="text-[1vh] xl:text-[0.9vw] text-gray-light text-center mt-[1vh] xl:mt-[0.75vw]">
-                                    *You'll be redirected to Pinterest to authorize access to your boards.<br/>
+                                    *You&#39;ll be redirected to Pinterest to authorize access to your boards.<br/>
                                     ArtGrind only reads board data and never posts on your behalf.
                                 </p>
                             </div>
