@@ -254,7 +254,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                         setRoundsInput(String(clamped));
                                         updateSettings({numberOfRounds: clamped});
                                     }}
-                                    className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[5vh] h-[4vh] xl:w-[3vw] xl:h-[2vw] text-center
+                                    className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[5vh] h-[4vh] xl:w-[4vw] xl:h-[2vw] text-center
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <Button
