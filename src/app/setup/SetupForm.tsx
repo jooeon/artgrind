@@ -127,7 +127,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                      WebkitMaskImage: "linear-gradient(to top, transparent, black 20%)",
                  }}
             >
-                <div className="overflow-y-auto h-[calc(1.5*26vh)] md:h-[calc(1.5*32vh)] xl:h-[calc(1.5*18vw)] scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="overflow-y-auto h-[calc(1.5*30vh)] md:h-[calc(1.5*32vh)] xl:h-[calc(1.5*18vw)] scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div className="w-full flex flex-wrap justify-between xl:justify-start gap-[2vh] xl:gap-[2vw] overflow-x-auto
                          pt-[8vh] xl:pt-[4vw] pb-[2vh] xl:pb-[2vw] px-[2.5vh] xl:px-[2vw]
                         scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -328,7 +328,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                     <div>
                         <p>Display each image for:</p>
                         <div
-                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                            className="flex flex-wrap gap-x-[1.25vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
                             {timeOptions.map(({label, value}) => (
                                 <Button
                                     key={value}
@@ -341,63 +341,63 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                     {label}
                                 </Button>
                             ))}
-                        </div>
-                        <div className="flex gap-[1.5vh] xl:gap-[1vw] mt-[1vh] xl:mt-[0.75vw]">
-                            <Button
-                                onClick={() => {
-                                    setCustomMode(true);
-                                    updateSettings({timePerImage: customTimeValue});
-                                    handleTimeSelection(customTimeValue);
-                                }}
-                                className={`setting-button w-fit ${isCustomTime ? "setting-button-active" : ""}`}
-                            >
-                                Custom
-                            </Button>
-                            {isCustomTime && (
-                                <motion.div
-                                    className="flex items-center xl:items-end gap-[1vh] xl:gap-[0.5vw]"
-                                    initial={{opacity: 0}}
-                                    animate={{opacity: 1}}
-                                    transition={{duration: 0.1, ease: "easeIn"}}
+                            <div className="flex gap-[1vh] xl:gap-[1vw]">
+                                <Button
+                                    onClick={() => {
+                                        setCustomMode(true);
+                                        updateSettings({timePerImage: customTimeValue});
+                                        handleTimeSelection(customTimeValue);
+                                    }}
+                                    className={`setting-button w-fit ${isCustomTime ? "setting-button-active" : ""}`}
                                 >
-                                    <input
-                                        type="number"
-                                        step="1"
-                                        onKeyDown={(e) => {
-                                            if (e.key === "." || e.key === "-") e.preventDefault();
-                                        }}
-                                        value={customTimeInput}
-                                        min="1" max="3600"
-                                        placeholder="1200"
-                                        onChange={(e) => {
-                                            setCustomTimeInput(e.target.value);
-                                            const val = Math.floor(Number(e.target.value));
-                                            if (val >= 1) {
-                                                const clamped = Math.min(val, 3600);
-                                                handleTimeSelection(clamped);
+                                    Custom
+                                </Button>
+                                {isCustomTime && (
+                                    <motion.div
+                                        className="flex items-center xl:items-end gap-[1vh] xl:gap-[0.5vw]"
+                                        initial={{opacity: 0}}
+                                        animate={{opacity: 1}}
+                                        transition={{duration: 0.1, ease: "easeIn"}}
+                                    >
+                                        <input
+                                            type="number"
+                                            step="1"
+                                            onKeyDown={(e) => {
+                                                if (e.key === "." || e.key === "-") e.preventDefault();
+                                            }}
+                                            value={customTimeInput}
+                                            min="1" max="3600"
+                                            placeholder="1200"
+                                            onChange={(e) => {
+                                                setCustomTimeInput(e.target.value);
+                                                const val = Math.floor(Number(e.target.value));
+                                                if (val >= 1) {
+                                                    const clamped = Math.min(val, 3600);
+                                                    handleTimeSelection(clamped);
+                                                    setCustomTimeValue(clamped);
+                                                    updateSettings({timePerImage: clamped});
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                const val = Math.floor(Number(customTimeInput));
+                                                const clamped = Math.min(Math.max(val || 1, 1), 3600);
+                                                setCustomTimeInput(String(clamped));
                                                 setCustomTimeValue(clamped);
                                                 updateSettings({timePerImage: clamped});
-                                            }
-                                        }}
-                                        onBlur={() => {
-                                            const val = Math.floor(Number(customTimeInput));
-                                            const clamped = Math.min(Math.max(val || 1, 1), 3600);
-                                            setCustomTimeInput(String(clamped));
-                                            setCustomTimeValue(clamped);
-                                            updateSettings({timePerImage: clamped});
-                                        }}
-                                        className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[8vh] xl:w-[5vw] h-[4vh] xl:h-[2vw] text-center
+                                            }}
+                                            className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[8vh] xl:w-[5vw] h-[4vh] xl:h-[2vw] text-center
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                    />
-                                    <span className="text-custom-gray">seconds</span>
-                                </motion.div>
-                            )}
+                                        />
+                                        <span className="text-custom-gray">seconds</span>
+                                    </motion.div>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <div>
                         <p>Play a chime at:</p>
                         <div
-                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                            className="flex flex-wrap gap-x-[1.25vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
                             {warningOptions.map(({label, value}) => {
                                 const isSelected = warningIntervals.includes(value);
                                 return (
