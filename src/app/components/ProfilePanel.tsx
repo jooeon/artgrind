@@ -18,7 +18,7 @@ export default function ProfilePanel({ username }: { username: string }) {
     }, []);
 
     return (
-        <div className="absolute top-0 right-0 flex flex-col items-end
+        <div className="fixed top-0 right-0 flex flex-col items-end h-[7vh] xl:h-[4vw] z-100
                         px-[0.5vh] xl:px-[0.25vw] py-[0.5vh] xl:py-[0.25vw] text-[1.5vh] xl:text-[1vw]">
             <div className="group flex items-start pointer-events-none">
                 {/* text bubble */}

@@ -108,21 +108,109 @@ export function SetupForm({ boards, presetBoards }: Props) {
 
     return (
         <>
-            <BoardCarousel
-                boards={activeBoards}
-                selectedIndex={safeIndex}
-                maxRounds={maxRounds}
-                isPreset={showPresets}
-                onSelect={(i) => {
-                    const newMax = Math.min(activeBoards[i].pin_count, 250);
-                    updateSettings({
-                        selectedIndex: i,
-                        numberOfRounds: Math.min(numberOfRounds, newMax)
-                    });
-                }}
-            />
+            {/*<BoardCarousel*/}
+            {/*    boards={activeBoards}*/}
+            {/*    selectedIndex={safeIndex}*/}
+            {/*    maxRounds={maxRounds}*/}
+            {/*    isPreset={showPresets}*/}
+            {/*    onSelect={(i) => {*/}
+            {/*        const newMax = Math.min(activeBoards[i].pin_count, 250);*/}
+            {/*        updateSettings({*/}
+            {/*            selectedIndex: i,*/}
+            {/*            numberOfRounds: Math.min(numberOfRounds, newMax)*/}
+            {/*        });*/}
+            {/*    }}*/}
+            {/*/>*/}
+            <div className="relative w-full"
+                 style={{
+                     maskImage: "linear-gradient(to top, transparent, black 20%)",
+                     WebkitMaskImage: "linear-gradient(to top, transparent, black 20%)",
+                 }}
+            >
+                <div className="overflow-y-auto h-[calc(1.5*26vh)] md:h-[calc(1.5*32vh)] xl:h-[calc(1.5*18vw)] scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="w-full flex flex-wrap justify-between xl:justify-start gap-[2vh] xl:gap-[2vw] overflow-x-auto
+                         pt-[8vh] xl:pt-[4vw] pb-[2vh] xl:pb-[2vw] px-[2.5vh] xl:px-[2vw]
+                        scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {activeBoards.map((board, i) => (
+                            <div
+                                key={board.id}
+                                onClick={() => {
+                                    const newMax = Math.min(board.pin_count, 250);
+                                    updateSettings({
+                                        selectedIndex: i,
+                                        numberOfRounds: Math.min(numberOfRounds, newMax)
+                                    });
+                                }}
+                                className={`w-[42vw] xl:w-[20vw] flex-1 flex flex-col items-center cursor-pointer transition-opacity
+                                ${safeIndex === i ? "opacity-100" : "opacity-40"}`}
+                                data-clickable="true"
+                            >
+                                <div className={`w-fit flex justify-center gap-[2px] rounded-2xl overflow-hidden border-3 ${safeIndex === i ? "border-black" : "border-white"}`}>
+                                    {board.media.image_cover_url ?
+                                        <>
+                                            <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
+                                                 className={`w-[28.2vw] h-[28.2vw] xl:w-[13.1vw] xl:h-[13.1vw] object-cover`}/>
+                                            <div className="flex flex-col gap-[2px]">
+                                                {board.media.pin_thumbnail_urls[0] ?
+                                                    <img src={board.media.pin_thumbnail_urls[0]}
+                                                         alt="pinterest_board_thumbnail_2"
+                                                         className={`w-[14vw] h-[14vw] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover`}/>
+                                                    :
+                                                    <div
+                                                        className="bg-gray-100 text-white w-[6vh] h-[6vh] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover"></div>
+                                                }
+                                                {board.media.pin_thumbnail_urls[1] ?
+                                                    <img src={board.media.pin_thumbnail_urls[1]}
+                                                         alt="pinterest_board_thumbnail_3"
+                                                         className={`w-[14vw] h-[14vw] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover rounded-br-2xl`}/>
+                                                    :
+                                                    <div
+                                                        className="bg-gray-100 text-white w-[6vh] h-[6vh] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover rounded-br-2xl"></div>
+                                                }
+                                            </div>
+                                        </>
+                                        :
+                                        <div className="flex justify-center items-center text-center w-[42.2vw] h-[28vw] xl:w-[19.6vw] xl:h-[13vw]
+                                            font-semibold text-[1.75vw] bg-gray-200 text-white rounded-2xl p-[2vh] xl:p-[2vw]">
+                                            Add pins to this board first!
+                                        </div>
+                                    }
+
+                                </div>
+                                <div className="flex mt-[1vh] xl:mt-[0.6vw] xl:pl-[0.5vw]">
+                                    <div className="flex flex-col">
+                                        <div className="flex gap-[1.5vh] xl:gap-[1vw] w-[42vw] xl:w-[19.6vw] ">
+                                            <p className={`font-bold text-[2.3vh] xl:text-[1.5vw] leading-snug whitespace-nowrap overflow-hidden text-ellipsis`}>{board.name}</p>
+                                            {(board.pin_count !== 0 && safeIndex === i) &&
+                                                <a
+                                                    href={`/filter?boardId=${boards[selectedIndex].id}&name=${boards[selectedIndex].name}&isPreset=${isPreset}`}
+                                                    className="w-[2.3vh] xl:w-[1.5vw] h-[2.3vh] xl:h-[1.5vw] pt-[0.4vh] xl:pt-[0.3vw]"
+                                                >
+                                                    <svg viewBox="0 0 30 30" fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        <path fillRule="evenodd" clipRule="evenodd"
+                                                              d="M0 30H30V27.0161H0V30ZM14.763 21.0483H9V14.9254L23.7585 0L30 6.17365L14.763 21.0483Z"
+                                                              fill="black"/>
+                                                    </svg>
+                                                </a>
+                                            }
+                                        </div>
+                                        <p className={`font-medium text-[1.4vh] xl:text-[0.85vw] text-gray-dark`}>
+                                            {board.pin_count !== maxRounds && safeIndex === i
+                                                ? `${maxRounds}/${board.pin_count} Pins selected`
+                                                : `${board.pin_count} Pins`
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
             <motion.section
-                className="flex justify-center items-center mb-[2vh] xl:mb-[2vw] mx-[2.5vh] xl:mx-[2vw]"
+                className="fixed bottom-[2vh] left-0 right-0 z-10 w-[80dvw] w-full
+                    flex justify-center items-center mb-[2vh] xl:mb-[2vw] mx-auto"
                 initial={{opacity: 0, y: 40}}
                 animate={{opacity: 1, y: 0}}
                 transition={{
@@ -131,7 +219,8 @@ export function SetupForm({ boards, presetBoards }: Props) {
                     ease: [0.76, 0, 0.24, 1],
                 }}
             >
-                <div className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-full xl:w-1/2 h-fit px-[2.25vh] py-[2.75vh] xl:p-[1.5vw] text-[1.5vh] xl:text-[1vw]">
+                <div
+                    className="flex flex-col gap-[3vh] xl:gap-[1.5vw] relative w-[90dvw] xl:w-1/2 h-fit px-[2.25vh] py-[2.75vh] xl:p-[1.5vw] text-[1.5vh] xl:text-[1vw]">
                     <div className="flex justify-between">
                         <div>
                             <p>Number of practice rounds:</p>
@@ -165,7 +254,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                         setRoundsInput(String(clamped));
                                         updateSettings({numberOfRounds: clamped});
                                     }}
-                                    className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-10 xl:w-[2.5vw] h-10 xl:h-[2vw] text-center
+                                    className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[5vh] h-[4vh] xl:w-[3vw] xl:h-[2vw] text-center
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <Button
@@ -190,10 +279,10 @@ export function SetupForm({ boards, presetBoards }: Props) {
                             >
                                 <div className="flex items-center xl:items-end gap-[0.75vh] xl:gap-[0.5vw]">
                                     <p className="font-semibold">Board Options</p>
-                                    <div className="w-[1.25vh] xl:w-[1vw] h-[1.25vh] xl:h-[1vw]">
+                                    <div className="w-[1.25vh] xl:w-[1vw] h-[1.25vh] xl:h-[1vw] pt-[0.25vh] xl:pt-0">
                                         {showBoardOptions ?
                                             <svg viewBox="0 0 20 12" fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
+                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path fillRule="evenodd" clipRule="evenodd"
                                                       d="M8.8215 0.48815C9.47233 -0.162717 10.5277 -0.162717 11.1785 0.48815L19.5118 8.8215C20.1627 9.47233 20.1627 10.5277 19.5118 11.1785C18.861 11.8293 17.8057 11.8293 17.1548 11.1785L10 4.02367L2.84518 11.1785C2.1943 11.8293 1.13903 11.8293 0.48815 11.1785C-0.162717 10.5277 -0.162717 9.47233 0.48815 8.8215L8.8215 0.48815Z"
                                                       fill="#131313"/>
@@ -237,17 +326,17 @@ export function SetupForm({ boards, presetBoards }: Props) {
                         </div>
                     </div>
                     <div>
-                    <p>Display each image for:</p>
-                    <div
-                        className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
-                        {timeOptions.map(({label, value}) => (
-                            <Button
-                                key={value}
-                                onClick={() => {
-                                    setCustomMode(false);
+                        <p>Display each image for:</p>
+                        <div
+                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                            {timeOptions.map(({label, value}) => (
+                                <Button
+                                    key={value}
+                                    onClick={() => {
+                                        setCustomMode(false);
                                         handleTimeSelection(value);
                                     }}
-                                    className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
+                                    className={`setting-button w-fit ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
                                 >
                                     {label}
                                 </Button>
@@ -260,7 +349,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                     updateSettings({timePerImage: customTimeValue});
                                     handleTimeSelection(customTimeValue);
                                 }}
-                                className={`setting-button w-fit h-10 xl:h-[2vw] px-3 xl:px-[0.75vw] ${isCustomTime ? "setting-button-active" : ""}`}
+                                className={`setting-button w-fit ${isCustomTime ? "setting-button-active" : ""}`}
                             >
                                 Custom
                             </Button>
@@ -287,7 +376,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                                 const clamped = Math.min(val, 3600);
                                                 handleTimeSelection(clamped);
                                                 setCustomTimeValue(clamped);
-                                                updateSettings({ timePerImage: clamped });
+                                                updateSettings({timePerImage: clamped});
                                             }
                                         }}
                                         onBlur={() => {
@@ -295,9 +384,9 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                             const clamped = Math.min(Math.max(val || 1, 1), 3600);
                                             setCustomTimeInput(String(clamped));
                                             setCustomTimeValue(clamped);
-                                            updateSettings({ timePerImage: clamped });
+                                            updateSettings({timePerImage: clamped});
                                         }}
-                                        className="flex rounded-md border-1 border-gray-300 px-1 py-1 xl:px-2 xl:py-2 w-[8vh] xl:w-[5vw] h-10 xl:h-[2vw] text-center
+                                        className="flex rounded-md border-1 border-gray-300 px-[1vh] py-[1vh] xl:px-[1vw] xl:py-[1vw] w-[8vh] xl:w-[5vw] h-[4vh] xl:h-[2vw] text-center
                                         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                     <span className="text-custom-gray">seconds</span>
@@ -307,7 +396,8 @@ export function SetupForm({ boards, presetBoards }: Props) {
                     </div>
                     <div>
                         <p>Play a chime at:</p>
-                        <div className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
+                        <div
+                            className="flex flex-wrap gap-x-[1.5vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
                             {warningOptions.map(({label, value}) => {
                                 const isSelected = warningIntervals.includes(value);
                                 return (
@@ -322,8 +412,10 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                         className={`setting-button h-10 xl:h-[2vw] px-4 xl:px-[1vw] flex items-center gap-2 xl:gap-[0.5vw]
                                         ${isSelected ? "setting-button-active" : ""}`}
                                     >
-                                        <div className="w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center">
-                                            {isSelected && <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
+                                        <div
+                                            className="w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center">
+                                            {isSelected &&
+                                                <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
                                         </div>
                                         {label}
                                     </Button>

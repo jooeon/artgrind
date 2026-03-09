@@ -98,7 +98,7 @@ export default async function Setup() {
         <>
             {boardAvailable ?
                 <main className="flex flex-col min-h-[100dvh]">
-                    <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw] pt-[5vh] xl:pt-[4vw]">
+                    <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw]">
                         <ProfilePanel username={username} />
                         <SetupForm boards={data} presetBoards={presetBoards}/>
                         <Footer />
