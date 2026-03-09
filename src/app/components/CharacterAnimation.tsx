@@ -53,29 +53,29 @@ export default function CharacterAnimation() {
                 {isOpen && (
                     <motion.div
                         className="fixed inset-0 flex justify-center items-start gap-[2vh] xl:gap-[1.5vw] z-[101] p-[2vh] xl:p-[2vw] pointer-events-none
-                        text-white text-[2vh] xl:text-[1.5vw] font-medium [&_p]:w-full"
+                        text-white text-[2vh] xl:text-[1.5vw] font-light [&_p]:w-full"
                         initial={{opacity: 0}}
                         animate={{ opacity: 1, transition: { duration: 1, delay: 1.2, ease: "easeOut" } }}
                         exit={{ opacity: 0, transition: { duration: 0.5, delay: 0, ease: "easeIn" } }}
                     >
                         <article className="flex flex-col items-center gap-[2vh] xl:gap-[1.5vw] w-11/12 xl:w-9/12">
-                            <h2 className="font-fornire font-normal text-[5.5vh] xl:text-[5vw]">Why timed drawing?</h2>
-                            <p>Timed drawing is one of the best ways to improve at figure drawing. Since there’s no time to get hung up on mistakes, you simply <span className="font-bold">draw more</span>—and the more you draw, the faster you improve.</p>
-                            <p>It forces you to focus on the big shapes and proportions rather than getting lost in the details.</p>
+                            <h2 className="font-fornire lowercase font-normal text-[5.5vh] xl:text-[5vw]">Why timed drawing?</h2>
+                            <p>Timed drawing is one of the best ways to improve at figure drawing. Since there’s no time to get hung up on mistakes, you simply <span className="font-semibold">draw more</span>—and the more you draw, the faster you improve.</p>
+                            <p>It forces you to focus on the main shapes and proportions rather than getting lost in the details.</p>
                             <p className="hidden xl:inline">It also gives you the skills to sketch in the real world. When you can capture the essentials in 30 or 60 seconds, you can draw people at the park or on the subway who won&#39;t sit still for you.</p>
                             <p className="">Tips to keep it fun:</p>
                             <ul className="flex flex-col gap-[1vh] xl:gap-[0.5vw] [&_li]:flex [&_li]:gap-[1vh] [&_li]:xl:gap-[0.5vw]">
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-bold">Reset your goal.</span> Gesture drawings aren&#39;t meant to look good—focus on finishing the drawing in the given time and fill the page with shapes that even loosely capture the gesture. <span className="hidden xl:inline">If it helps, toss the drawings after so you don’t have to look at them.</span></div>
+                                    <div><span className="font-semibold">Reset your goal.</span> Gesture drawings aren&#39;t meant to look good—focus on finishing the drawing in the given time and fill the page with shapes that even loosely capture the gesture. <span className="hidden xl:inline">If it helps, toss the drawings after so you don’t have to look at them.</span></div>
                                 </li>
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-bold">Don’t Overdo It.</span> Start with 30-minute sessions so you don&#39;t burn out. <span className="hidden xl:inline">It’s a great high-intensity warm-up before you move on to more relaxed art.</span></div>
+                                    <div><span className="font-semibold">Don’t Overdo It.</span> Start with 30-minute sessions so you don&#39;t burn out. <span className="hidden xl:inline">It’s a great high-intensity warm-up before you move on to more relaxed art.</span></div>
                                 </li>
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-bold">Start Fast.</span> Always begin with your shortest poses (1 to 2 minutes). It loosens you up so that by the time you hit a 5-minute pose, you feel like you have all the time in the world.</div>
+                                    <div><span className="font-semibold">Start Fast.</span> Always begin with your shortest poses (1 to 2 minutes). It loosens you up so that by the time you hit a 5-minute pose, you feel like you have all the time in the world.</div>
                                 </li>
                             </ul>
                             <p>Happy drawing!</p>
