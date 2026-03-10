@@ -158,7 +158,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
             >
                 <div className="overflow-y-auto h-[calc(1.5*30vh)] md:h-[calc(1.5*32vh)] xl:h-[calc(1.5*18vw)] scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div className="w-full flex flex-wrap justify-between xl:justify-start gap-[2vh] xl:gap-[2vw] overflow-x-auto
-                         pt-[8vh] xl:pt-[4vw] pb-[6vh] xl:pb-[4vw] px-[2.5vh] xl:px-[2vw]
+                         pt-[8vh] xl:pt-[4vw] pb-[10vh] xl:pb-[6vw] px-[2.5vh] xl:px-[2vw]
                         scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {activeBoards.map((board, i) => (
                             <motion.div
