@@ -30,7 +30,7 @@ export default async function Home() {
                     </h2>
                 </div>
                 {/* Login Section */}
-                <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[15vw] flex-1
+                <section className="flex flex-col xl:flex-row items-center justify-center gap-[3vh] xl:gap-[15vw] flex-1
                     w-full h-1/2 mt-[10vh] xl:mt-[8vw] xl:px-[5vw]">
                     <div className="relative flex flex-col gap-[2.5vh] w-fit h-full">
                         <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">
@@ -53,7 +53,7 @@ export default async function Home() {
                             </div>
                         </div>
                     </div>
-                    <div className="relative flex flex-col gap-[2.25vh] w-fit h-full xl:mt-[6.5vw]">
+                    <div className="relative flex flex-col gap-[2vh] w-fit h-full xl:mt-[6.5vw]">
                         <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">
                             or quick start by:</h2>
                         <div className="flex flex-col gap-[2.25vh] xl:gap-[1.5vw] w-full text-[1.75vh] xl:text-[1.25vw]">
