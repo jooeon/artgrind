@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import type { Board } from "./BoardCarousel";
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -56,6 +56,14 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
     const [roundsInput, setRoundsInput] = useState(String(numberOfRounds));
     const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
     const [showBoardOptions, setShowBoardOptions] = useState(false);
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    useEffect(() => {
+        const check = () => setIsSmallScreen(window.innerWidth < 1280);
+        check();
+        window.addEventListener("resize", check);
+        return () => window.removeEventListener("resize", check);
+    }, []);
 
     const animationDelays = useMemo(
         () => getAnimationDelays(activeBoards.length),
@@ -158,7 +166,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
             >
                 <div className="overflow-y-auto h-[calc(1.5*30vh)] md:h-[calc(1.5*32vh)] xl:h-[calc(1.5*18vw)] scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div className="w-full flex flex-wrap justify-between xl:justify-start gap-[2vh] xl:gap-[2vw] overflow-x-auto
-                         pt-[8vh] xl:pt-[4vw] pb-[12vh] xl:pb-[6vw] px-[2.5vh] xl:px-[2vw]
+                         pt-[8vh] xl:pt-[4vw] pb-[10vh] xl:pb-[6vw] px-[2.5vh] xl:px-[2vw]
                         scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {activeBoards.map((board, i) => (
                             <motion.div
@@ -368,18 +376,21 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                         <p>Display each image for:</p>
                         <div
                             className="flex flex-wrap gap-x-[1.25vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
-                            {timeOptions.map(({label, value}) => (
-                                <Button
-                                    key={value}
-                                    onClick={() => {
-                                        setCustomMode(false);
-                                        handleTimeSelection(value);
-                                    }}
-                                    className={`setting-button w-fit ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
-                                >
-                                    {label}
-                                </Button>
-                            ))}
+                            {timeOptions.map(({label, value}) => {
+                                if (isSmallScreen && value === 90) return null;
+                                return (
+                                    <Button
+                                        key={value}
+                                        onClick={() => {
+                                            setCustomMode(false);
+                                            handleTimeSelection(value);
+                                        }}
+                                        className={`setting-button w-fit ${value === timePerImage && !isCustomTime ? "setting-button-active" : ""}`}
+                                    >
+                                        {label}
+                                    </Button>
+                                );
+                            })}
                             <div className="flex gap-[1vh] xl:gap-[1vw]">
                                 <Button
                                     onClick={() => {
@@ -438,6 +449,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                         <div
                             className="flex flex-wrap gap-x-[1.25vh] gap-y-[1vh] xl:gap-[1vw] mt-[1.5vh] xl:mt-[0.75vw]">
                             {warningOptions.map(({label, value}) => {
+                                if (isSmallScreen && value === 120) return null;
                                 const isSelected = warningIntervals.includes(value);
                                 return (
                                     <Button
@@ -452,9 +464,9 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                                         ${isSelected ? "setting-button-active" : ""}`}
                                     >
                                         <div
-                                            className="w-4 xl:w-[0.7vw] h-4 xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center">
+                                            className="w-[1.5vh] xl:w-[0.7vw] h-[1.5vh] xl:h-[0.7vw] border border-current rounded-xs flex items-center justify-center">
                                             {isSelected &&
-                                                <div className="w-2 xl:w-[0.35vw] h-2 xl:h-[0.35vw] bg-current"/>}
+                                                <div className="w-[0.75vh] xl:w-[0.35vw] h-[0.75vh] xl:h-[0.35vw] bg-current"/>}
                                         </div>
                                         {label}
                                     </Button>
