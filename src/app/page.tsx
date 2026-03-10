@@ -30,12 +30,12 @@ export default async function Home() {
                     </h2>
                 </div>
                 {/* Login Section */}
-                <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[10vw] flex-1
+                <section className="flex flex-col xl:flex-row items-center justify-center gap-[5vh] xl:gap-[15vw] flex-1
                     w-full h-1/2 mt-[10vh] xl:mt-[8vw] xl:px-[5vw]">
-                    <div className="relative flex flex-col gap-[2.5vh] xl:gap-[1.5vw] w-fit h-full font-neue-haas">
-                        <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">to
-                            get started:</h2>
-                        <div className="flex flex-col gap-[2.5vh] xl:gap-[2vw] w-fit text-[1.75vh] xl:text-[1.25vw]">
+                    <div className="relative flex flex-col gap-[2.5vh] w-fit h-full">
+                        <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">
+                            to get started:</h2>
+                        <div className="flex flex-col gap-[2.5vh] xl:gap-[1.5vw] w-fit text-[1.75vh] xl:text-[1.25vw]">
                             <ol className="flex flex-col gap-[1vh] xl:gap-[0.75vw] font-semibold">
                                 <li>1. Hand-pick your references on Pinterest</li>
                                 <li>2. Instantly sync and access all of your boards</li>
@@ -51,6 +51,16 @@ export default async function Home() {
                                     ArtGrind only reads board data and never posts on your behalf.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                    <div className="relative flex flex-col gap-[2.25vh] w-fit h-full xl:mt-[6.5vw]">
+                        <h2 className="xl:absolute xl:top-[-6vw] xl:left-[-4vw] font-fornire lowercase text-[6vh] xl:text-[3.75vw] leading-none text-center xl:text-start">
+                            or quick start by:</h2>
+                        <div className="flex flex-col gap-[2.25vh] xl:gap-[1.5vw] w-full text-[1.75vh] xl:text-[1.25vw]">
+                            <p className="text-center font-semibold">Accessing our preset references</p>
+                            <a href="/setup" role="button" className="flex flex-col button m-auto w-fit">
+                                <span>Continue without login</span>
+                            </a>
                         </div>
                     </div>
                 </section>

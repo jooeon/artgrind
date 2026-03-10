@@ -67,15 +67,24 @@ export default function CharacterAnimation() {
                             <ul className="flex flex-col gap-[1vh] xl:gap-[0.5vw] [&_li]:flex [&_li]:gap-[1vh] [&_li]:xl:gap-[0.5vw]">
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-semibold">Reset your goal.</span> Gesture drawings aren&#39;t meant to look good. Focus on finishing the drawing in the given time and fill the page with shapes that even loosely capture the gesture. <span className="hidden xl:inline">If it helps, toss the drawings after so you don’t have to look at them.</span></div>
+                                    <div><span className="font-semibold">Reset your goal.</span> Gesture drawings
+                                        aren&#39;t meant to look good. Focus on finishing the drawing in the given time
+                                        and fill the page with shapes that loosely capture the gesture. <span
+                                            className="hidden xl:inline">If it helps, toss the drawings after so you don’t have to look at them.</span>
+                                    </div>
                                 </li>
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-semibold">Don’t Overdo It.</span> Start with 30-minute sessions so you don&#39;t burn out. <span className="hidden xl:inline">It’s a great high-intensity warm-up before you move on to more relaxed art.</span></div>
+                                    <div><span className="font-semibold">Start Fast.</span> Always begin with your
+                                        shortest poses (1 to 2 minutes). It loosens you up so that by the time you hit a
+                                        5-minute pose, you feel like you have all the time in the world.
+                                    </div>
                                 </li>
                                 <li>
                                     <span>&#9671;</span>
-                                    <div><span className="font-semibold">Start Fast.</span> Always begin with your shortest poses (1 to 2 minutes). It loosens you up so that by the time you hit a 5-minute pose, you feel like you have all the time in the world.</div>
+                                    <div><span className="font-semibold">Don’t Overdo It.</span> Start with 30-minute
+                                        sessions so you don&#39;t burn out. <span className="hidden xl:inline">It’s a great high-intensity warm-up before you move on to more relaxed art.</span>
+                                    </div>
                                 </li>
                             </ul>
                             <p>Happy drawing!</p>

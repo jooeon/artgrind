@@ -4,7 +4,6 @@ import {SetupForm} from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
-import Link from "next/link";
 import {Board} from "@/app/setup/BoardCarousel";
 
 export const runtime = "edge";
@@ -76,44 +75,41 @@ async function getUsername(user: any) {
 }
 
 export default async function Setup() {
-    const data = await getBoards();
-    let boardAvailable = false;
-
-    if (!data) redirect("/");
-
-    if (data.length !== 0) {
-        boardAvailable = true;
-    }
-
-    // console.log(data)
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
 
     const presetBoards = await getPresetBoards();
+    const userBoards = token ? await getBoards() : [];
 
-    const user = await getUser();
-    // console.log(user);
+    if (!token && presetBoards.length === 0) redirect("/");
 
-    const username = await getUsername(user);
+    let username: string | null = null;
+    if (token) {
+        const user = await getUser();
+        username = await getUsername(user);
+    }
 
     return (
         <>
-            {boardAvailable ?
-                <main className="flex flex-col min-h-[100dvh]">
-                    <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw]">
-                        <ProfilePanel username={username} />
-                        <SetupForm boards={data} presetBoards={presetBoards}/>
-                        <Footer />
-                    </div>
-                </main>
-            :
-                <div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100dvh] p-[2vh]">
-                    <ProfilePanel username={username} />
-                    <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>
-                    <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">
-                        I created a board
-                    </Link>
-                    {/*<CharacterAnimation />*/}
+            <main className="flex flex-col min-h-[100dvh]">
+                <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw]">
+                    <ProfilePanel username={username}/>
+                    <SetupForm
+                        boards={userBoards}
+                        presetBoards={presetBoards}
+                        isLoggedIn={!!token}
+                    />
+                    <Footer/>
                 </div>
-            }
+            </main>
+            {/*<div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100dvh] p-[2vh]">*/}
+            {/*    <ProfilePanel username={username} />*/}
+            {/*    <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>*/}
+            {/*    <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">*/}
+            {/*        I created a board*/}
+            {/*    </Link>*/}
+            {/*    /!*<CharacterAnimation />*!/*/}
+            {/*</div>*/}
         </>
     );
 }

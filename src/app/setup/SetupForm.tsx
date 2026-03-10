@@ -1,6 +1,5 @@
 "use client";
-import React, {useEffect, useState} from "react";
-import BoardCarousel from "@/app/setup/BoardCarousel";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import type { Board } from "./BoardCarousel";
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -11,9 +10,15 @@ import Button from "../components/Button";
 type Props = {
     boards: Board[];
     presetBoards: Board[];
+    isLoggedIn: boolean;
 }
 
-export function SetupForm({ boards, presetBoards }: Props) {
+const getAnimationDelays = (count: number) =>
+    Array.from({ length: count }, () => Math.random() * 0.5);
+
+let mounted = false;
+
+export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
     const timeOptions = [
         { label: "30s", value: 30 },
         { label: "60s", value: 60 },
@@ -34,11 +39,16 @@ export function SetupForm({ boards, presetBoards }: Props) {
 
     const { settings, updateSettings } = useSetupSettings();
     const { selectedIndex, numberOfRounds, timePerImage, warningIntervals, isPreset } = settings;
-    const [showPresets, setShowPresets] = useState(false);   // Toggle show preset boards
+    const [showPresets, setShowPresets] = useState(
+        !isLoggedIn ? true : (settings.isPreset ?? false)
+    );
     const activeBoards = showPresets ? presetBoards : boards; // can be preset boards or user's boards
     const safeIndex = Math.min(selectedIndex, activeBoards.length - 1);
-    const { excluded } = useExcludedPins(activeBoards[safeIndex].id);
-    const maxRounds = Math.min(activeBoards[safeIndex].pin_count - excluded.length, 250);   // max number of pins in a single API request is 250
+    const boardId = activeBoards[safeIndex]?.id ?? "";
+    const { excluded } = useExcludedPins(boardId);
+    const maxRounds = activeBoards.length > 0
+        ? Math.min(activeBoards[safeIndex].pin_count - excluded.length, 250)
+        : 0;
     const presetValues = timeOptions.map(o => o.value); // preset time values (30s, 60s, etc)
     const [customTimeValue, setCustomTimeValue] = useState<number>(1200);
     const [customMode, setCustomMode] = useState(false);
@@ -47,9 +57,16 @@ export function SetupForm({ boards, presetBoards }: Props) {
     const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
     const [showBoardOptions, setShowBoardOptions] = useState(false);
 
+    const animationDelays = useMemo(
+        () => getAnimationDelays(activeBoards.length),
+        [activeBoards.length]
+    );
+
+    // For calculating "mounting" time based on time of initial animation completion
     useEffect(() => {
-        setShowPresets(isPreset ?? false);
-    }, [isPreset]);
+        const timer = setTimeout(() => { mounted = true; }, Math.max(...animationDelays) * 1000 + 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     // sync when numberOfRounds changes externally (e.g. switching boards)
     useEffect(() => {
@@ -81,6 +98,15 @@ export function SetupForm({ boards, presetBoards }: Props) {
         }
     }, [maxRounds]);
 
+    useEffect(() => {
+        if (!isLoggedIn) return; // non-logged in always shows presets, no need to sync
+        setShowPresets(settings.isPreset ?? false);
+    }, [settings.isPreset]);
+
+    // if (activeBoards.length === 0) {
+    //     return <p>No boards found.</p>;
+    // }
+
     const handleTimeSelection = (newValue: number | null) => {
         updateSettings({ timePerImage: newValue })
         // only keep warning intervals that are less than the new time per image value
@@ -96,7 +122,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
     const practiceUrl = {
         pathname: '/practice',
         query: {
-            index: activeBoards[safeIndex].id,
+            index: activeBoards[safeIndex]?.id,
             rounds: numberOfRounds,
             time: timePerImage === null ? "null" : timePerImage,
             intervals: warningIntervals,
@@ -104,7 +130,10 @@ export function SetupForm({ boards, presetBoards }: Props) {
         },
     };
 
-    // console.log(isPreset);
+    // console.log("showPresets:", showPresets);
+    // console.log("presetBoards:", presetBoards.length);
+    // console.log("activeBoards:", activeBoards.length);
+    // console.log("activeBoards data:", JSON.stringify(activeBoards[0]));
 
     return (
         <>
@@ -132,8 +161,15 @@ export function SetupForm({ boards, presetBoards }: Props) {
                          pt-[8vh] xl:pt-[4vw] pb-[2vh] xl:pb-[2vw] px-[2.5vh] xl:px-[2vw]
                         scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {activeBoards.map((board, i) => (
-                            <div
+                            <motion.div
                                 key={board.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: safeIndex === i ? 1 : 0.4, y: 0 }}
+                                transition={{
+                                    delay: mounted ? 0 : animationDelays[i],
+                                    duration: mounted ? 0.3 : 0.5,
+                                    ease: "easeOut",
+                                }}
                                 onClick={() => {
                                     const newMax = Math.min(board.pin_count, 250);
                                     updateSettings({
@@ -183,7 +219,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                             <p className={`font-bold text-[2.3vh] xl:text-[1.5vw] leading-snug whitespace-nowrap overflow-hidden text-ellipsis`}>{board.name}</p>
                                             {(board.pin_count !== 0 && safeIndex === i) &&
                                                 <a
-                                                    href={`/filter?boardId=${boards[selectedIndex].id}&name=${boards[selectedIndex].name}&isPreset=${isPreset}`}
+                                                    href={`/filter?boardId=${activeBoards[safeIndex].id}&name=${activeBoards[safeIndex].name}&isPreset=${isPreset}`}
                                                     className="w-[2.3vh] xl:w-[1.5vw] h-[2.3vh] xl:h-[1.5vw] pt-[0.4vh] xl:pt-[0.3vw]"
                                                 >
                                                     <svg viewBox="0 0 30 30" fill="none"
@@ -203,7 +239,7 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
@@ -214,9 +250,10 @@ export function SetupForm({ boards, presetBoards }: Props) {
                 initial={{opacity: 0, y: 40}}
                 animate={{opacity: 1, y: 0}}
                 transition={{
-                    delay: 0.4,
+                    delay: 0.5,
                     duration: 0.4,
-                    ease: [0.76, 0, 0.24, 1],
+                    ease: "easeOut",
+                    // ease: [0.76, 0, 0.24, 1],
                 }}
             >
                 <div
@@ -272,58 +309,60 @@ export function SetupForm({ boards, presetBoards }: Props) {
                                 </Button>
                             </div>
                         </div>
-                        <div className="flex flex-col items-end">
-                            <Button
-                                onClick={() => setShowBoardOptions(!showBoardOptions)}
-                                className="w-fit"
-                            >
-                                <div className="flex items-center xl:items-end gap-[0.75vh] xl:gap-[0.5vw]">
-                                    <p className="font-semibold">Board Options</p>
-                                    <div className="w-[1.25vh] xl:w-[1vw] h-[1.25vh] xl:h-[1vw] pt-[0.25vh] xl:pt-0">
-                                        {showBoardOptions ?
-                                            <svg viewBox="0 0 20 12" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path fillRule="evenodd" clipRule="evenodd"
-                                                      d="M8.8215 0.48815C9.47233 -0.162717 10.5277 -0.162717 11.1785 0.48815L19.5118 8.8215C20.1627 9.47233 20.1627 10.5277 19.5118 11.1785C18.861 11.8293 17.8057 11.8293 17.1548 11.1785L10 4.02367L2.84518 11.1785C2.1943 11.8293 1.13903 11.8293 0.48815 11.1785C-0.162717 10.5277 -0.162717 9.47233 0.48815 8.8215L8.8215 0.48815Z"
-                                                      fill="#131313"/>
-                                            </svg>
-                                            :
-                                            <svg viewBox="0 0 20 12" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path fillRule="evenodd" clipRule="evenodd"
-                                                      d="M11.1785 11.1785C10.5277 11.8293 9.47233 11.8293 8.8215 11.1785L0.488167 2.84513C-0.162666 2.19429 -0.162666 1.13896 0.488167 0.488126C1.139 -0.162708 2.19433 -0.162708 2.84517 0.488126L10 7.64296L17.1548 0.488126C17.8057 -0.162708 18.861 -0.162708 19.5118 0.488126C20.1627 1.13896 20.1627 2.19429 19.5118 2.84513L11.1785 11.1785Z"
-                                                      fill="#131313"/>
-                                            </svg>
-                                        }
+                        {isLoggedIn  && (
+                            <div className="flex flex-col items-end">
+                                <Button
+                                    onClick={() => setShowBoardOptions(!showBoardOptions)}
+                                    className="w-fit"
+                                >
+                                    <div className="flex items-center xl:items-end gap-[0.75vh] xl:gap-[0.5vw]">
+                                        <p className="font-semibold">Board Options</p>
+                                        <div className="w-[1.25vh] xl:w-[1vw] h-[1.25vh] xl:h-[1vw] pt-[0.25vh] xl:pt-0">
+                                            {showBoardOptions ?
+                                                <svg viewBox="0 0 20 12" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path fillRule="evenodd" clipRule="evenodd"
+                                                          d="M8.8215 0.48815C9.47233 -0.162717 10.5277 -0.162717 11.1785 0.48815L19.5118 8.8215C20.1627 9.47233 20.1627 10.5277 19.5118 11.1785C18.861 11.8293 17.8057 11.8293 17.1548 11.1785L10 4.02367L2.84518 11.1785C2.1943 11.8293 1.13903 11.8293 0.48815 11.1785C-0.162717 10.5277 -0.162717 9.47233 0.48815 8.8215L8.8215 0.48815Z"
+                                                          fill="#131313"/>
+                                                </svg>
+                                                :
+                                                <svg viewBox="0 0 20 12" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path fillRule="evenodd" clipRule="evenodd"
+                                                          d="M11.1785 11.1785C10.5277 11.8293 9.47233 11.8293 8.8215 11.1785L0.488167 2.84513C-0.162666 2.19429 -0.162666 1.13896 0.488167 0.488126C1.139 -0.162708 2.19433 -0.162708 2.84517 0.488126L10 7.64296L17.1548 0.488126C17.8057 -0.162708 18.861 -0.162708 19.5118 0.488126C20.1627 1.13896 20.1627 2.19429 19.5118 2.84513L11.1785 11.1785Z"
+                                                          fill="#131313"/>
+                                                </svg>
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            </Button>
-                            {showBoardOptions &&
-                                <div
-                                    className="absolute top-[5.5vh] xl:top-[4vw] flex flex-col items-end border-3 border-black rounded-2xl overflow-hidden">
-                                    <button
-                                        onClick={() => {
-                                            setShowPresets(false);
-                                            updateSettings({selectedIndex: 0});
-                                            updateSettings({isPreset: false});
-                                        }}
-                                        className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${!isPreset ? "setting-button-active" : ""}`}
-                                    >
-                                        My Boards
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowPresets(true);
-                                            updateSettings({selectedIndex: 0});
-                                            updateSettings({isPreset: true});
-                                        }}
-                                        className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${isPreset ? "setting-button-active" : ""}`}
-                                    >
-                                        Preset Boards
-                                    </button>
-                                </div>
-                            }
-                        </div>
+                                </Button>
+                                {showBoardOptions &&
+                                    <div
+                                        className="absolute top-[5.5vh] xl:top-[4vw] flex flex-col items-end border-3 border-black rounded-2xl overflow-hidden">
+                                        <button
+                                            onClick={() => {
+                                                setShowPresets(false);
+                                                updateSettings({selectedIndex: 0});
+                                                updateSettings({isPreset: false});
+                                            }}
+                                            className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${!isPreset ? "setting-button-active" : ""}`}
+                                        >
+                                            My Boards
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowPresets(true);
+                                                updateSettings({selectedIndex: 0});
+                                                updateSettings({isPreset: true});
+                                            }}
+                                            className={`w-full px-2 xl:px-3 h-10 xl:h-[2vw] font-medium ${isPreset ? "setting-button-active" : ""}`}
+                                        >
+                                            Preset Boards
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        )}
                     </div>
                     <div>
                         <p>Display each image for:</p>
