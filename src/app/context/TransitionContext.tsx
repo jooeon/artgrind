@@ -7,7 +7,7 @@ type TransitionContextType = {
     resetTransition: () => void;
 };
 
-const TransitionContext = createContext<TransitionContextType>({ startTransition: () => {} });
+const TransitionContext = createContext<TransitionContextType>({ startTransition: () => {}, resetTransition: () => {} });
 
 export function TransitionProvider({ children }: { children: React.ReactNode }) {
     const [transitioning, setTransitioning] = useState(false);
