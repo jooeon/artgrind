@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Cursor from "@/app/components/Cursor";
 import DrawableBackground from "@/app/components/DrawableBackground";
+import PageTransition from "@/app/components/PageTransition";
+import React from "react";
+import {TransitionProvider} from "@/app/context/TransitionContext";
 
 export const metadata: Metadata = {
     title: "ArtGrind — Timed Drawing Practice with Pinterest",
@@ -45,10 +48,12 @@ export default function RootLayout({
                 <link rel="stylesheet" href="https://use.typekit.net/vvo6xhh.css"/>
                 <title>ArtGrind - Timed Drawing Practice</title>
             </head>
-            <body className="bg-white font-neue-haas">
-                <DrawableBackground />
-                <Cursor />
-                {children}
+            <body className="bg-white font-neue-haas max-h-[100dvh]">
+                <TransitionProvider>
+                    <DrawableBackground />
+                    <Cursor />
+                    {children}
+                </TransitionProvider>
             </body>
         </html>
     );

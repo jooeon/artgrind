@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import {cookies} from "next/headers";
+import {redirect} from "next/navigation";
 import {SetupForm} from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
@@ -23,12 +23,10 @@ async function getBoards() {
 
     const data = await res.json();
 
-    const sorted = data.items.sort((a: any, b: any) => {
+    return data.items.sort((a: any, b: any) => {
         return new Date(b.board_pins_modified_at).getTime() -
             new Date(a.board_pins_modified_at).getTime();
     });
-
-    return sorted;
 }
 
 async function getPresetBoards(): Promise<Board[]> {
@@ -91,7 +89,7 @@ export default async function Setup() {
 
     return (
         <>
-            <main className="flex flex-col min-h-[100dvh]">
+            <main className="flex flex-col min-h-[100dvh] pb-[3vh] xl:pb-[1vw]">
                 <div className="flex flex-col justify-between flex-1 gap-[2vh] xl:gap-[2.5vw]">
                     <ProfilePanel username={username}/>
                     <SetupForm
@@ -99,9 +97,9 @@ export default async function Setup() {
                         presetBoards={presetBoards}
                         isLoggedIn={!!token}
                     />
-                    <Footer/>
                 </div>
             </main>
+            <Footer/>
             {/*<div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100dvh] p-[2vh]">*/}
             {/*    <ProfilePanel username={username} />*/}
             {/*    <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>*/}

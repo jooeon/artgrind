@@ -1,11 +1,14 @@
 "use client";
 import React, {useEffect, useMemo, useState} from "react";
 import type { Board } from "./BoardCarousel";
-import Link from "next/link";
 import { motion } from "motion/react";
 import {useSetupSettings} from "@/app/hooks/useSetupSettings";
 import {useExcludedPins} from "@/app/hooks/useExcludedPins";
 import Button from "../components/Button";
+import {useRouter} from "next/navigation";
+import {gsap} from "gsap";
+import {useTransition} from "@/app/context/TransitionContext";
+import {inkPathsLtR} from "@/app/lib/inkPaths";
 
 type Props = {
     boards: Board[];
@@ -57,6 +60,9 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
     const [customTimeInput, setCustomTimeInput] = useState(String(customTimeValue));
     const [showBoardOptions, setShowBoardOptions] = useState(false);
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    // variables for page transitions
+    const router = useRouter();
+    const { startTransition } = useTransition();
 
     useEffect(() => {
         const check = () => setIsSmallScreen(window.innerWidth < 1280);
@@ -127,16 +133,17 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
     };
 
     // package data into URL to be sent to Practice page
-    const practiceUrl = {
-        pathname: '/practice',
-        query: {
-            index: activeBoards[safeIndex]?.id,
-            rounds: numberOfRounds,
-            time: timePerImage === null ? "null" : timePerImage,
-            intervals: warningIntervals,
-            isPreset: showPresets,
-        },
-    };
+    // const practiceUrl = {
+    //     pathname: '/practice',
+    //     query: {
+    //         index: activeBoards[safeIndex]?.id,
+    //         rounds: numberOfRounds,
+    //         time: timePerImage === null ? "null" : timePerImage,
+    //         intervals: warningIntervals,
+    //         isPreset: showPresets,
+    //     },
+    // };
+    const practiceUrl = `/practice?index=${activeBoards[safeIndex]?.id}&rounds=${numberOfRounds}&time=${timePerImage ?? "null"}&${warningIntervals.map(i => `intervals=${i}`).join("&")}&isPreset=${showPresets}`;
 
     // console.log("showPresets:", showPresets);
     // console.log("presetBoards:", presetBoards.length);
@@ -254,7 +261,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
             </div>
             <motion.section
                 className="fixed bottom-[2vh] left-0 right-0 z-10 w-[80dvw] w-full
-                    flex justify-center items-center mb-[2vh] xl:mb-[2vw] mx-auto"
+                    flex justify-center items-center mb-[3vh] xl:mb-[2vw] mx-auto"
                 initial={{opacity: 0, y: 40}}
                 animate={{opacity: 1, y: 0}}
                 transition={{
@@ -474,14 +481,20 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                             })}
                         </div>
                     </div>
-                    <Link
-                        href={practiceUrl}
-                        className={`button w-full block text-center ${maxRounds < 1 ? "disabled" : ""}`}
-                        aria-disabled={maxRounds < 1}
-                        onClick={(e) => maxRounds < 1 && e.preventDefault()}
+                    <button
+                        onClick={() => {
+                            if (maxRounds < 1) return;
+                            startTransition();
+                            // navigate after transition duration
+                            setTimeout(() => {
+                                router.push(practiceUrl);
+                            }, 1200); // match GSAP duration
+
+                        }}
+                        className={`button w-full text-center ${maxRounds < 1 ? "disabled" : ""}`}
                     >
                         Start timed practice
-                    </Link>
+                    </button>
                     {/* shadow box */}
                     <div className="absolute inset-0 translate-y-4 border-3 rounded-xl bg-black z-[-10]"></div>
                     {/* main box */}

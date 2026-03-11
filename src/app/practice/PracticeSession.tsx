@@ -3,6 +3,9 @@ import React, {useState, useEffect, useRef} from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import {formatTime} from "@/app/Utils";
+import {gsap} from "gsap";
+import {inkPathsTtB} from "@/app/lib/inkPaths";
+import {useTransition} from "@/app/context/TransitionContext";
 
 type Pin = {
     id: string;
@@ -52,6 +55,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     // Audio locked on iOS until first user interaction, bypass this by adding a touch event that unlocks it
     const audioContextRef = useRef<AudioContext | null>(null);
     const audioBufferRef = useRef<AudioBuffer | null>(null);
+    const { resetTransition } = useTransition();
 
     const handleStart = () => {
         audioContextRef.current = new AudioContext();
@@ -136,17 +140,38 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
         return () => clearInterval(timer);
     }, [timeLeft, currentIndex, isPaused, timePerImage]);
 
+    // Retract overlay transition
+    useEffect(() => {
+        gsap.to("#transition-ink-path", {
+            morphSVG: inkPathsTtB.hidden,
+            duration: 1.25,
+            ease: "power3.in",
+        });
+        resetTransition();
+    }, []);
+
     if (isMobileDevice === null) return null;
 
     // "tap to begin" overlay for mobile (on desktop started is set to true above)
     if (!started) {
         return (
             <div
-                className="w-full h-[100dvh] flex flex-col gap-[3vh] xl:gap-[3vw] items-center justify-center bg-black"
+                className="w-full h-[100dvh] bg-black"
                 onClick={handleStart}
             >
-                <p className="text-white font-fornire lowercase text-[6vh] xl:text-[6vw] leading-none">Tap to begin!</p>
-                <p className="text-white font-medium text-[1.4vh] xl:text-[1.4vw]">Turn silent mode off to hear chimes</p>
+                <motion.div
+                    className="w-full h-full flex flex-col gap-[3vh] xl:gap-[3vw] items-center justify-center"
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    transition={{
+                        delay: 1.0,
+                        duration: 0.5,
+                        ease: "easeIn"
+                    }}
+                >
+                    <p className="text-white font-fornire lowercase text-[6vh] xl:text-[6vw] leading-none">Tap to begin!</p>
+                    <p className="text-white font-medium text-[1.4vh] xl:text-[1.4vw]">Turn silent mode off to hear chimes</p>
+                </motion.div>
             </div>
         );
     }

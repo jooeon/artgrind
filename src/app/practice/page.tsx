@@ -88,7 +88,7 @@ export default async function PracticePage({
     return (
         <>
             <main>
-                <section className="bg-black-light">
+                <section className="bg-black">
                     <PracticeSession
                         pins={data.items}
                         rounds={Number(rounds)}
