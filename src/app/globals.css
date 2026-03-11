@@ -100,13 +100,6 @@ button:disabled {
     transition: all 0.2s ease-out;
 }
 
-@media screen and (max-width: 1280px) {
-    .setting-button {
-        height: 4vh;
-        padding: 0 1.25vh;
-    }
-}
-
 .setting-button:hover {
     background-color: #dddddd;
 }
@@ -125,6 +118,33 @@ button:disabled {
 .setting-button-active:hover {
     background-color: var(--color-black);
     opacity: 0.8;
+}
+
+.back-button {
+    padding: 0 0.75vw;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 9999px;
+    border: none;
+    outline: none;
+    background-color: var(--color-black);
+    transition: all 0.2s ease-out;
+}
+
+.back-button:hover {
+    opacity: 0.8;
+}
+
+@media screen and (max-width: 1280px) {
+    .setting-button {
+        height: 4vh;
+        padding: 0 1.25vh;
+    }
+    .back-button {
+        padding: 0 1.25vh
+    }
 }
 
 /* Links styling  */

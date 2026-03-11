@@ -67,13 +67,13 @@ export default function FilterClient({ pins, boardId, boardName }: Props) {
         <section className="flex justify-center p-[1.5vh] xl:p-[1.6vw]">
             <div className="flex flex-col justify-center items-center w-fit min-w-[30vw]">
                 <div className="flex justify-between items-center w-full mb-[2vh] xl:mb-[2vw] gap-[1vh]">
-                    <div className="flex items-start gap-[1vh] xl:gap-[0.75vw]">
+                    <div className="flex items-start gap-[1.5vh] xl:gap-[2vw]">
                         <Button onClick={() => router.push("/setup")}
-                                className="setting-button w-[3.5vh] xl:w-[2.1vw] h-[3.5vh] xl:h-[2.1vw]">
-                            <svg width="100%" height="100%" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20 31.6666L8.33337 19.9999L20 8.33325" stroke="#6A6A6A" strokeWidth="2"
+                                className="back-button w-[7vh] xl:w-[4vw] h-[5vh] xl:h-[3vw]">
+                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 31.6666L8.33337 19.9999L20 8.33325" stroke="#ffffff" strokeWidth="2"
                                       strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M31.6667 20H8.33337" stroke="#6A6A6A" strokeWidth="2" strokeLinecap="round"
+                                <path d="M31.6667 20H8.33337" stroke="#ffffff" strokeWidth="2" strokeLinecap="round"
                                       strokeLinejoin="round"/>
                             </svg>
                         </Button>
