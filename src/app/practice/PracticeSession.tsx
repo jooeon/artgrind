@@ -144,7 +144,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
     useEffect(() => {
         gsap.to("#transition-ink-path", {
             morphSVG: inkPathsTtB.hidden,
-            duration: 1.25,
+            duration: 1,
             ease: "power3.in",
         });
         resetTransition();
@@ -164,7 +164,7 @@ export default function PracticeSession({ pins, rounds, timePerImage, warnInterv
                     initial={{opacity: 0}}
                     animate={{opacity: 1}}
                     transition={{
-                        delay: 1.0,
+                        delay: 0.6,
                         duration: 0.5,
                         ease: "easeIn"
                     }}
