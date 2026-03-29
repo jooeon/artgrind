@@ -79,6 +79,8 @@ export default async function Setup() {
     const presetBoards = await getPresetBoards();
     const userBoards = token ? await getBoards() : [];
 
+    // console.log(userBoards)
+
     if (!token && presetBoards.length === 0) redirect("/");
 
     let username: string | null = null;

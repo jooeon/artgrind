@@ -200,7 +200,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                                     {board.media.image_cover_url ?
                                         <>
                                             <img src={board.media.image_cover_url} alt="pinterest_board_thumbnail_1"
-                                                 className={`w-[28.2vw] h-[28.2vw] xl:w-[13.1vw] xl:h-[13.1vw] object-cover`}/>
+                                                 className={`w-[28.2vw] h-[28.4vw] xl:w-[13.1vw] xl:h-[13.2vw] object-cover`}/>
                                             <div className="flex flex-col gap-[2px]">
                                                 {board.media.pin_thumbnail_urls[0] ?
                                                     <img src={board.media.pin_thumbnail_urls[0]}
@@ -213,10 +213,10 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                                                 {board.media.pin_thumbnail_urls[1] ?
                                                     <img src={board.media.pin_thumbnail_urls[1]}
                                                          alt="pinterest_board_thumbnail_3"
-                                                         className={`w-[14vw] h-[14vw] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover rounded-br-2xl`}/>
+                                                         className={`w-[14vw] h-[14vw] xl:w-[6.5vw] xl:h-[6.55vw] min-w-[7vh] object-cover rounded-br-2xl`}/>
                                                     :
                                                     <div
-                                                        className="bg-gray-100 text-white w-[6vh] h-[6vh] xl:w-[6.5vw] xl:h-[6.5vw] min-w-[7vh] object-cover rounded-br-2xl"></div>
+                                                        className="bg-gray-100 text-white w-[6vh] h-[6vh] xl:w-[6.5vw] xl:h-[6.55vw] min-w-[7vh] object-cover rounded-br-2xl"></div>
                                                 }
                                             </div>
                                         </>
