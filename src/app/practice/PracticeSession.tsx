@@ -34,6 +34,8 @@ function getRandomOrder(pins: Pin[], rounds: number): Pin[] {
 }
 
 export default function PracticeSession({ pins, rounds, timePerImage, warnIntervals, boardId }: Props) {
+    console.log(pins)
+    console.log("rounds: "+rounds)
     // NOTE: if timePerImage is null, that means time is unlimited
     const [queue] = useState<Pin[]>(() => {
         const excludedMap = JSON.parse(localStorage.getItem("artgrind_excluded_pins") ?? "{}");

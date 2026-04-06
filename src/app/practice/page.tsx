@@ -83,7 +83,7 @@ export default async function PracticePage({
 
     if (!data) redirect("/setup");
 
-    console.log(data)
+    // console.log(data)
 
     return (
         <>

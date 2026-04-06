@@ -35,6 +35,7 @@ const getColumnCount = () => {
 };
 
 export default function FilterClient({ pins, boardId, boardName }: Props) {
+    console.log(pins)
     const { excluded, togglePin, selectAll, deselectAll } = useExcludedPins(boardId);
     const router = useRouter();
     const includedCount = pins.length - excluded.length;
