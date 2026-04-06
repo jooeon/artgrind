@@ -44,5 +44,7 @@ export default async function FilterPage({
         : await getListOfPins(boardId);
     if (!data) redirect("/setup");
 
+    console.log(data)
+
     return <FilterClient pins={data.items} boardId={boardId} boardName={name} />;
 }
