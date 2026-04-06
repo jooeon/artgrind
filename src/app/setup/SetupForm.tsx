@@ -6,9 +6,7 @@ import {useSetupSettings} from "@/app/hooks/useSetupSettings";
 import {useExcludedPins} from "@/app/hooks/useExcludedPins";
 import Button from "../components/Button";
 import {useRouter} from "next/navigation";
-import {gsap} from "gsap";
 import {useTransition} from "@/app/context/TransitionContext";
-import {inkPathsLtR} from "@/app/lib/inkPaths";
 
 type Props = {
     boards: Board[];
@@ -234,7 +232,7 @@ export function SetupForm({ boards, presetBoards, isLoggedIn }: Props) {
                                             <p className={`font-bold text-[2.3vh] xl:text-[1.5vw] leading-snug whitespace-nowrap overflow-hidden text-ellipsis`}>{board.name}</p>
                                             {(board.pin_count !== 0 && safeIndex === i) &&
                                                 <a
-                                                    href={`/filter?boardId=${activeBoards[safeIndex].id}&name=${activeBoards[safeIndex].name}&isPreset=${isPreset}`}
+                                                    href={`/filter?boardId=${activeBoards[safeIndex].id}&name=${activeBoards[safeIndex].name}&isPreset=${showPresets}`}
                                                     className="w-[2.3vh] xl:w-[1.5vw] h-[2.3vh] xl:h-[1.5vw] pt-[0.4vh] xl:pt-[0.3vw]"
                                                 >
                                                     <svg viewBox="0 0 30 30" fill="none"
