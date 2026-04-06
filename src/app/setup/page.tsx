@@ -1,19 +1,18 @@
-import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
-import {SetupForm} from "@/app/setup/SetupForm";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { SetupForm } from "@/app/setup/SetupForm";
 import Footer from "@/app/components/Footer";
 import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
-import {Board} from "@/app/setup/BoardCarousel";
+import { Board } from "@/app/setup/BoardCarousel";
 
 export const runtime = "edge";
 
-// Get the first x boards, sorted by last modified
 async function getBoards() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
 
-    if (!token) return null;
+    if (!token) return [];
 
     const res = await fetch("https://api.pinterest.com/v5/boards", {
         headers: {
@@ -21,7 +20,19 @@ async function getBoards() {
         },
     });
 
+    if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+            throw new Error("Your Pinterest session expired. Please reconnect your account.");
+        }
+        throw new Error(`Failed to load boards: ${res.statusText}`);
+    }
+
     const data = await res.json();
+
+    // Safety check: Ensure items exist before sorting
+    if (!data.items || !Array.isArray(data.items)) {
+        return [];
+    }
 
     return data.items.sort((a: any, b: any) => {
         return new Date(b.board_pins_modified_at).getTime() -
@@ -40,11 +51,14 @@ async function getPresetBoards(): Promise<Board[]> {
             const res = await fetch(`https://api.pinterest.com/v5/boards/${id.trim()}`, {
                 headers: { "Authorization": `Bearer ${token}` },
             });
+
+            if (!res.ok) return null; // Gracefully skip failed preset fetches
             return res.json();
         })
     );
 
-    return boards.filter(b => b.id); // filter out any failed fetches
+    // Filter out nulls from failed fetches and ensure an ID exists
+    return boards.filter((b): b is Board => b !== null && !!b.id);
 }
 
 async function getUser() {
@@ -59,16 +73,23 @@ async function getUser() {
         },
     });
 
+    if (!res.ok) {
+        return null; // If getting the user fails, we just won't show the username, no need to crash
+    }
+
     return res.json();
 }
 
-async function getUsername(user: any) {
+// Removed the unnecessary `await` keywords here
+function getUsername(user: any) {
+    if (!user) return null;
+
     if (user.account_type === `PINNER`) {
-        return await user.username;
+        return user.username;
     } else if (user.account_type === `BUSINESS`) {
-        return await user.business_name;
+        return user.business_name;
     } else {
-        return await "Unknown Username";
+        return "Unknown Username";
     }
 }
 
@@ -76,18 +97,18 @@ export default async function Setup() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
 
-    const presetBoards = await getPresetBoards();
-    const userBoards = token ? await getBoards() : [];
+    // PERFORMANCE BOOST: Fetch everything at the same time in parallel
+    const [presetBoards, userBoards, user] = await Promise.all([
+        getPresetBoards(),
+        token ? getBoards() : Promise.resolve([]),
+        token ? getUser() : Promise.resolve(null)
+    ]);
 
-    // console.log(userBoards)
-
-    if (!token && presetBoards.length === 0) redirect("/");
-
-    let username: string | null = null;
-    if (token) {
-        const user = await getUser();
-        username = await getUsername(user);
+    if (!token && presetBoards.length === 0) {
+        redirect("/");
     }
+
+    const username = getUsername(user);
 
     return (
         <>
@@ -102,14 +123,6 @@ export default async function Setup() {
                 </div>
             </main>
             <Footer/>
-            {/*<div className="flex flex-col justify-center items-center gap-[4vh] xl:gap-[3vw] w-full min-h-[100dvh] p-[2vh]">*/}
-            {/*    <ProfilePanel username={username} />*/}
-            {/*    <p className="font-fornire text-center text-[5vh] xl:text-[4vw] leading-none">Create a board on Pinterest first and come back!</p>*/}
-            {/*    <Link href="/setup" className="button text-[2vh] xl:text-[1.5vw]">*/}
-            {/*        I created a board*/}
-            {/*    </Link>*/}
-            {/*    /!*<CharacterAnimation />*!/*/}
-            {/*</div>*/}
         </>
     );
 }

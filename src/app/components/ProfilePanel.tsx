@@ -59,7 +59,7 @@ export default function ProfilePanel({ username }: { username: string | null }) 
                 >
                     {/* character icon */}
                     <motion.button
-                        onClick={() => setIsOpen(prev => !prev)}
+                        onClick={() => handleLogout()}
                         className="h-[5vh] w-[5vh] xl:h-[2.5vw] xl:w-[2.5vw]"
                         variants={{
                             rest: {rotate: 0},

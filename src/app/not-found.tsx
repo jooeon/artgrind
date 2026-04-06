@@ -10,7 +10,7 @@ export default function NotFound() {
             <Link href="/" className="button text-[2vh] xl:text-[1.5vw]">
                 Go home
             </Link>
-            <CharacterAnimation />
+            {/*<CharacterAnimation />*/}
         </main>
     );
 }
