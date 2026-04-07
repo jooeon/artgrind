@@ -52,8 +52,12 @@ async function getPresetBoards(): Promise<Board[]> {
                 headers: { "Authorization": `Bearer ${token}` },
             });
 
-            if (!res.ok) return null; // Gracefully skip failed preset fetches
-            return res.json();
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error(`DEBUG: Fetch failed for board ${id}. Status: ${res.status}`, errorText);
+                return null;
+            }
+            return await res.json();
         })
     );
 
@@ -97,7 +101,6 @@ export default async function Setup() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
 
-    // PERFORMANCE BOOST: Fetch everything at the same time in parallel
     const [presetBoards, userBoards, user] = await Promise.all([
         getPresetBoards(),
         token ? getBoards() : Promise.resolve([]),
