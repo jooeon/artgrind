@@ -1,41 +1,52 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import Character from "@/app/components/Character";
-import {AnimatePresence, motion} from "motion/react";
-import {inkPathsBRtT} from "@/app/lib/inkPaths";
+import { AnimatePresence, motion } from "motion/react";
+import { inkPathsBRtT } from "@/app/lib/inkPaths";
 
 gsap.registerPlugin(MorphSVGPlugin);
 
 export default function CharacterAnimation() {
     const [isOpen, setIsOpen] = useState(false);
+    const isAnimating = useRef(false);
 
     useEffect(() => {
+        // Kill any in-progress tween on this element before starting a new one
+        gsap.killTweensOf("#ink-path");
+
         if (isOpen) {
             gsap.to("#ink-path", {
                 morphSVG: inkPathsBRtT.visible,
                 duration: 2.5,
                 ease: "power1.inOut",
+                onComplete: () => { isAnimating.current = false; },
             });
         } else {
             gsap.to("#ink-path", {
                 morphSVG: inkPathsBRtT.hidden,
                 duration: 1.5,
                 ease: "power1.inOut",
+                onComplete: () => { isAnimating.current = false; },
             });
         }
     }, [isOpen]);
 
+    const handleToggle = () => {
+        if (isAnimating.current) return; // block while animating
+        isAnimating.current = true;
+        setIsOpen(prev => !prev);
+    };
+
     return (
         <>
-            {/* Full screen SVG overlay */}
             <svg
                 className="fixed inset-0 w-full h-full z-[100] pointer-events-none"
                 viewBox="80 30 180 200"
                 preserveAspectRatio="none"
-                style={{pointerEvents: isOpen ? "auto" : "none"}}
-                onClick={() => setIsOpen(false)}
+                style={{ pointerEvents: isOpen ? "auto" : "none" }}
+                onClick={() => { if (!isAnimating.current) { isAnimating.current = true; setIsOpen(false); } }}
             >
                 <path
                     id="ink-path"
@@ -44,13 +55,12 @@ export default function CharacterAnimation() {
                 />
             </svg>
 
-            {/* overlay content */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         className="fixed inset-0 flex justify-center items-start gap-[2vh] xl:gap-[1.5vw] z-[101] p-[2vh] xl:p-[2vw] pointer-events-none
                         text-white text-[2vh] xl:text-[1.5vw] font-light [&_p]:w-full"
-                        initial={{opacity: 0}}
+                        initial={{ opacity: 0 }}
                         animate={{ opacity: 1, transition: { duration: 1, delay: 1.2, ease: "easeOut" } }}
                         exit={{ opacity: 0, transition: { duration: 0.5, delay: 0, ease: "easeIn" } }}
                     >
@@ -89,17 +99,16 @@ export default function CharacterAnimation() {
                 )}
             </AnimatePresence>
 
-            {/* character */}
             <div className="fixed bottom-[-5vw] right-0 h-[15vw] w-[15vw] z-[102] mix-blend-difference">
                 <motion.div
-                    initial={{y: 200}}
-                    animate={{y: 0}}
-                    transition={{duration: 2, delay: 1.4, ease: "easeInOut"}}
-                    onClick={() => setIsOpen(prev => !prev)}
+                    initial={{ y: 200 }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 2, delay: 1.4, ease: "easeInOut" }}
+                    onClick={handleToggle}
                     data-clickable="true"
                     className="cursor-pointer"
                 >
-                    <Character/>
+                    <Character />
                 </motion.div>
             </div>
         </>
