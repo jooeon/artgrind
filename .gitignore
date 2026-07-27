@@ -45,3 +45,12 @@ refresh_token.sh
 
 # info
 MAINTENANCE.txt
+
+# OpenNext build output
+.open-next/
+
+# Wrangler local state
+.wrangler/
+
+# Cloudflare generated files
+.wrangler/state/
