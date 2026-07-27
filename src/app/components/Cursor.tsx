@@ -67,7 +67,7 @@ export default function Cursor() {
 
     return (
         <div className="hidden xl:block">
-            <style>{`* { cursor: none !important; }`}</style>
+            {/*<style>{`* { cursor: none !important; }`}</style>*/}
             <motion.div
                 className="fixed top-0 left-0 pointer-events-none w-0 xl:w-[2vw] h-0 xl:h-[2vw] z-[999] mix-blend-difference"
                 style={{ x: position.x, y: position.y }}
