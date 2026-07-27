@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 
-export const runtime = "edge";
-
 export async function GET() {
     const clientId = process.env.PINTEREST_APP_ID!;
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback`;

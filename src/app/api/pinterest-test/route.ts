@@ -1,7 +1,5 @@
 import { cookies } from "next/headers";
 
-export const runtime = "edge";
-
 export async function GET() {
     const cookieStore = await cookies();
     // console.log("All cookies:", cookieStore.getAll());

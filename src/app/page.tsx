@@ -5,8 +5,6 @@ import React from "react";
 import Footer from "@/app/components/Footer";
 import CharacterAnimation from "@/app/components/CharacterAnimation";
 
-export const runtime = "edge";
-
 export default async function Home() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;

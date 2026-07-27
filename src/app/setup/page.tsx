@@ -6,8 +6,6 @@ import React from "react";
 import ProfilePanel from "@/app/components/ProfilePanel";
 import { Board } from "@/app/setup/BoardCarousel";
 
-export const runtime = "edge";
-
 async function getBoards() {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
